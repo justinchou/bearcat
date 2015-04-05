@@ -9,7 +9,7 @@
  * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
  *
  * Bearcat command
- * Copyright(c) 2014 fantasyni <fantasyni@163.com>
+ * Copyright(c) 2015 fantasyni <fantasyni@163.com>
  * MIT Licensed
  */
 
@@ -29,6 +29,7 @@ var Root;
 
 Root.bearcat = bearcat;
 
+process.env.LOADER_BIN = 'on';
 var resourceLoader = new ResourceLoader();
 var propertiesLoader = new PropertiesLoader();
 
@@ -157,6 +158,7 @@ function doGenerateIdPaths(opts) {
 
 	fs.appendFileSync(outputFile, 'var idPaths = ' + JSON.stringify(idPaths) + ';\n');
 	fs.appendFileSync(outputFile, 'Root.__bearcatData__.idPaths = idPaths;\n');
+	fs.appendFileSync(outputFile, 'if(typeof bearcat === "undefined") {return;}\n');
 	fs.appendFileSync(outputFile, 'bearcat.createApp\(\);');
 
 	console.log(outputFile + ' idPaths generated...');

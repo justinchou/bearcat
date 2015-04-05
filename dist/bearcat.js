@@ -2,7 +2,7 @@
 require('./lib/util/requireUtil');
 
 module.exports = require('./lib/bearcat');
-},{"./lib/bearcat":19,"./lib/util/requireUtil":32}],2:[function(require,module,exports){
+},{"./lib/bearcat":19,"./lib/util/requireUtil":41}],2:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -507,7 +507,7 @@ AutoProxyCreator.prototype.canApply = function(advisor, beanObject, beanName) {
 }
 
 module.exports = AutoProxyCreator;
-},{"../../util/aopUtil":26,"../../util/utils":34,"../framework/proxyFactory":8,"../targetSource":10}],5:[function(require,module,exports){
+},{"../../util/aopUtil":34,"../../util/utils":43,"../framework/proxyFactory":8,"../targetSource":10}],5:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -690,7 +690,7 @@ AdvisedSupport.prototype.doGetInterceptionAdvice = function(method, beanName, ad
 }
 
 module.exports = AdvisedSupport;
-},{"../../util/utils":34}],6:[function(require,module,exports){
+},{"../../util/utils":43}],6:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -885,9 +885,9 @@ DynamicAopProxy.prototype.doInvokeAdvisorsAround = function(target, method, args
 	var advise = advisor.getAdvice();
 	var aspectBean = advisor.getBean();
 
-	if (Utils.checkObject(args)) {
-		args = Array.prototype.slice.apply(args);
-	}
+	// if (Utils.checkObject(args)) {
+	// 	args = Array.prototype.slice.apply(args);
+	// }
 
 	if (advisor.isRuntime()) {
 		args.unshift(method);
@@ -916,9 +916,10 @@ DynamicAopProxy.prototype.doInvokeAdvisorsAfter = function(method, args, advisor
 		return cb();
 	}
 
-	if (Utils.checkObject(args)) {
-		args = Array.prototype.slice.apply(args);
-	} else if (!Utils.checkArray(args)) {
+	// if (Utils.checkObject(args)) {
+	// 	args = Array.prototype.slice.apply(args);
+	// } else 
+	if (!Utils.checkArray(args)) {
 		args = [args];
 	}
 
@@ -957,7 +958,7 @@ var checkFuncName = function(name) {
 }
 
 module.exports = DynamicAopProxy;
-},{"../../util/constant":28,"../../util/utils":34,"pomelo-logger":47}],7:[function(require,module,exports){
+},{"../../util/constant":36,"../../util/utils":43,"pomelo-logger":56}],7:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -1016,7 +1017,6 @@ DynamicMetaProxy.prototype.dyInit = function() {
 					};
 
 					self[method] = function() {
-						arguments = Array.prototype.slice.apply(arguments);
 						return self.dyInvoke(method, arguments);
 					};
 				})(interface);
@@ -1153,7 +1153,7 @@ var checkFuncName = function(name) {
 }
 
 module.exports = DynamicMetaProxy;
-},{"../../util/utils":34,"pomelo-logger":47}],8:[function(require,module,exports){
+},{"../../util/utils":43,"pomelo-logger":56}],8:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -1208,7 +1208,7 @@ ProxyFactory.prototype.getProxy = function() {
 }
 
 module.exports = ProxyFactory;
-},{"../../util/requireUtil":32,"../../util/utils":34,"./advisedSupport":5,"./dynamicAopProxy":6}],9:[function(require,module,exports){
+},{"../../util/requireUtil":41,"../../util/utils":43,"./advisedSupport":5,"./dynamicAopProxy":6}],9:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -1326,7 +1326,7 @@ Pointcut.prototype.match = function(targetMethod) {
 }
 
 module.exports = Pointcut;
-},{"../util/utils":34}],10:[function(require,module,exports){
+},{"../util/utils":43}],10:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -1414,8 +1414,13 @@ module.exports = TargetSource;
 var logger = require('pomelo-logger').getLogger('bearcat', 'BeanFactory');
 var DynamicMetaProxy = require('../aop/framework/dynamicMetaProxy');
 var SingletonBeanFactory = require('./singletonBeanFactory');
+var ModelConstraint = require('../model/modelConstraint');
+var ModelDefinition = require('../model/modelDefinition');
 var BeanDefinition = require('./support/beanDefinition');
 var ValidatorUtil = require('../util/validatorUtil');
+var ModelFilter = require('../model/modelFilter');
+var ModelProxy = require('../model/modelProxy');
+var ModelUtil = require('../util/modelUtil');
 var Constant = require('../util/constant');
 var BeanUtil = require('../util/beanUtil');
 var AopUtil = require('../util/aopUtil');
@@ -1429,15 +1434,16 @@ var Utils = require('../util/utils');
  */
 var BeanFactory = function() {
 	this.aspects = [];
+	this.modelMap = {};
 	this.initCbMap = {};
 	this.beanCurMap = {};
+	this.constraints = {};
+	this.tableModelMap = {};
 	this.beanFunctions = {};
 	this.beanDefinitions = {};
 	this.beanPostProcessors = [];
-	this.singletonBeanFactory = new SingletonBeanFactory();
+	this.singletonBeanFactory = new SingletonBeanFactory(this);
 }
-
-module.exports = BeanFactory;
 
 /**
  * BeanFactory get bean instance through BeanFactory IoC container.
@@ -1451,8 +1457,6 @@ BeanFactory.prototype.getBean = function(beanName) {
 		logger.error("circle reference beanName " + beanName + " is in creating");
 		return;
 	}
-
-	arguments = Array.prototype.slice.apply(arguments);
 
 	this.beanCurMap[beanName] = true;
 	var beanObject = this.doGetBean.apply(this, arguments);
@@ -1470,9 +1474,29 @@ BeanFactory.prototype.getBean = function(beanName) {
  * @api public
  */
 BeanFactory.prototype.getBeanProxy = function(beanName) {
-	arguments = Array.prototype.slice.apply(arguments);
-	var beanProxy = this.doGetBeanProxy.apply(this, arguments);
-	return beanProxy;
+	return this.doGetBeanProxy.apply(this, arguments);
+}
+
+/**
+ * BeanFactory get model through BeanFactory IoC container.
+ *
+ * @param  {String} modelId
+ * @return {Object} model proxy object
+ * @api public
+ */
+BeanFactory.prototype.getModelProxy = function(modelId) {
+	return this.doGetModelProxy(modelId);
+}
+
+/**
+ * BeanFactory get constraint through BeanFactory IoC container.
+ *
+ * @param  {String} cid
+ * @return {Object} constraint bean object
+ * @api public
+ */
+BeanFactory.prototype.getConstraint = function(cid) {
+	return this.doGetConstraint(cid);
 }
 
 /**
@@ -1490,8 +1514,6 @@ BeanFactory.prototype.doGetBean = function(beanName) {
 		return null;
 	}
 
-	arguments = Array.prototype.slice.apply(arguments);
-
 	if (beanDefinition.isAbstract()) {
 		logger.warn('abstract bean can not get bean instance, you can use bearcat.getFunction to get constructor function of the bean');
 		return this.getBeanFunction(beanName);
@@ -1506,8 +1528,6 @@ BeanFactory.prototype.doGetBean = function(beanName) {
 	// }
 
 	if (beanDefinition.isSingleton()) {
-		arguments.push(this);
-
 		return this.singletonBeanFactory.getSingleton.apply(this.singletonBeanFactory, arguments);
 	} else if (beanDefinition.isPrototype()) {
 
@@ -1530,7 +1550,6 @@ BeanFactory.prototype.doGetBeanProxy = function(beanName) {
 		return null;
 	}
 
-	arguments = Array.prototype.slice.apply(arguments);
 	var dynamicMetaProxy = new DynamicMetaProxy();
 	dynamicMetaProxy.setBeanDefinition(beanDefinition);
 	dynamicMetaProxy.setBeanFactory(this);
@@ -1538,6 +1557,79 @@ BeanFactory.prototype.doGetBeanProxy = function(beanName) {
 	dynamicMetaProxy.dyInit();
 
 	return dynamicMetaProxy;
+}
+
+/**
+ * BeanFactory do get model through BeanFactory IoC container.
+ *
+ * @param  {String} modelId
+ * @return {Object} model proxy
+ * @api private
+ */
+BeanFactory.prototype.doGetModelProxy = function(modelId) {
+	var modelDefinition = this.getModelDefinition(modelId);
+
+	if (!modelDefinition) {
+		logger.error('BeanFactory modelDefinition null for %j', modelId);
+		return null;
+	}
+
+	var beanName = modelDefinition.getId();
+	var beanDefinition = this.getBeanDefinition(beanName);
+
+	if (!beanDefinition) {
+		logger.error('BeanFactory beanDefinition null for %j', modelId);
+		return null;
+	}
+
+	var modelFilter = new ModelFilter();
+	modelFilter.setModelDefinition(modelDefinition);
+
+	var modelProxy = new ModelProxy();
+	var modelBean = this.getBean(beanName);
+	var modelFields = modelDefinition.getFields();
+
+	for (var key in modelFields) {
+		var modelField = modelFields[key];
+		var modelDefault = modelField.getDefault();
+		var modelFieldType = modelField.getType();
+		if (Utils.isNotNull(modelDefault)) {
+			if (modelFieldType === Constant.TYPE_NUMBER) {
+				modelDefault = parseInt(modelDefault);
+			}
+			modelBean[key] = modelDefault;
+		}
+	}
+
+	modelFilter.setModel(modelBean);
+	modelProxy['model'] = modelBean;
+	modelProxy['beanFactory'] = this;
+	modelProxy['modelFilter'] = modelFilter;
+	modelProxy['beanDefinition'] = beanDefinition;
+	modelProxy['modelDefinition'] = modelDefinition;
+
+	modelProxy._modelInit();
+
+	return modelProxy;
+}
+
+/**
+ * BeanFactory do get constraint through BeanFactory IoC container.
+ *
+ * @param  {String} cid
+ * @return {Object} constraint bean object
+ * @api private
+ */
+BeanFactory.prototype.doGetConstraint = function(cid) {
+	var constraintDefinition = this.getConstraintDefinition(cid);
+
+	if (!constraintDefinition) {
+		logger.error('BeanFactory constraintDefinition null for %j', cid);
+		return null;
+	}
+
+	var beanName = constraintDefinition.getId();
+	return this.getBean(beanName);
 }
 
 /**
@@ -1572,9 +1664,6 @@ BeanFactory.prototype.doCreateBean = function(beanName) {
 		return this.getBeanFromFactoryBean.apply(this, arguments);
 	}
 
-	var args = Array.prototype.slice.apply(arguments);
-	args.shift();
-
 	var argsOn = beanDefinition.getArgsOn();
 	var propsOn = beanDefinition.getPropsOn();
 	var func = this.getBeanFunction(beanName);
@@ -1582,7 +1671,7 @@ BeanFactory.prototype.doCreateBean = function(beanName) {
 		return null;
 	}
 
-	var dependsBeans = this.getDependsBeanValues(argsOn, args);
+	var dependsBeans = this.getDependsBeanValues(argsOn, arguments);
 	var dependsApplyArgs = this.getDependsApplyArgs(dependsBeans);
 
 	var beanObject = Object.create(func.prototype);
@@ -1670,9 +1759,6 @@ BeanFactory.prototype.invokeInitMethods = function(beanObject, beanName, cb) {
 BeanFactory.prototype.getBeanFromFactoryBean = function(beanName) {
 	var beanDefinition = this.getBeanDefinition(beanName);
 
-	var args = Array.prototype.slice.apply(arguments);
-	args.shift();
-
 	var factoryBeanName = beanDefinition.getFactoryBeanName();
 	var factoryMethodName = beanDefinition.getFactoryMethodName();
 	var factoryArgsOn = beanDefinition.getFactoryArgsOn();
@@ -1685,7 +1771,7 @@ BeanFactory.prototype.getBeanFromFactoryBean = function(beanName) {
 
 	var factoryMethod = factoryBean[factoryMethodName];
 
-	var dependsBeans = this.getDependsBeanValues(factoryArgsOn, args);
+	var dependsBeans = this.getDependsBeanValues(factoryArgsOn, arguments);
 
 	var dependsApplyArgs = this.getDependsApplyArgs(dependsBeans);
 
@@ -1708,6 +1794,7 @@ BeanFactory.prototype.getDependsBeanValues = function(dependsOn, args) {
 		return r;
 	}
 
+	var s = 1;
 	for (var i = 0; i < dependsOn.length; i++) {
 		var wbean = dependsOn[i];
 		var beanName = wbean.getRef();
@@ -1719,11 +1806,9 @@ BeanFactory.prototype.getDependsBeanValues = function(dependsOn, args) {
 			}
 		}
 
-		if (Utils.checkArray(args)) {
-			if (wbean.getDependType() === Constant.DEPEND_TYPE_VAR) {
-				var value = args.shift();
-				wbean.setValue(value);
-			}
+		if (wbean.getDependType() === Constant.DEPEND_TYPE_VAR) {
+			var value = args[s++];
+			wbean.setValue(value);
 		}
 
 		r.push(wbean);
@@ -1808,9 +1893,9 @@ BeanFactory.prototype.setParentBean = function(beanName) {
  * @param  {Object} metaObjects
  * @api public
  */
-BeanFactory.prototype.registryBeans = function(metaObjects) {
+BeanFactory.prototype.registerBeans = function(metaObjects) {
 	for (var beanName in metaObjects) {
-		this.registryBean(beanName, metaObjects[beanName]);
+		this.registerBean(beanName, metaObjects[beanName]);
 	}
 }
 
@@ -1821,16 +1906,29 @@ BeanFactory.prototype.registryBeans = function(metaObjects) {
  * @param  {Object} metaObjects
  * @api public
  */
-BeanFactory.prototype.registryBean = function(beanName, metaObject) {
+BeanFactory.prototype.registerBean = function(beanName, metaObject) {
 	var func = metaObject.func;
-	if (func && Utils.checkFunction(func) && !this.getBeanFunction(beanName)) {
-		this.setBeanFunction(beanName, func);
-	}
 
 	var validateResult = ValidatorUtil.metaValidator(metaObject);
 	if (validateResult !== true) {
 		logger.error("registryBean %j metaObject %j validate error %s", beanName, metaObject, validateResult.stack);
 		return;
+	}
+
+	var mid = metaObject.mid;
+	if (mid) {
+		// register bearcat model
+		this.registerModel(beanName, mid, metaObject);
+	}
+
+	var cid = metaObject.cid;
+	if (cid) {
+		// register bearcat constraint
+		this.registerConstraint(beanName, cid, metaObject);
+	}
+
+	if (func && Utils.checkFunction(func) && !this.getBeanFunction(beanName)) {
+		this.setBeanFunction(beanName, func);
 	}
 
 	var order = metaObject.order;
@@ -1859,6 +1957,11 @@ BeanFactory.prototype.registryBean = function(beanName, metaObject) {
 		beanDefinition = new BeanDefinition();
 	}
 
+	// model scope should be prototype
+	if (mid) {
+		scope = Constant.SCOPE_PROTOTYPE;
+	}
+
 	beanDefinition.setFunc(func);
 	beanDefinition.setOrder(order);
 	beanDefinition.setScope(scope);
@@ -1883,6 +1986,68 @@ BeanFactory.prototype.registryBean = function(beanName, metaObject) {
 	}
 
 	this.beanDefinitions[beanName] = beanDefinition;
+}
+
+/**
+ * BeanFactory register model through metaObject into BeanFactory.
+ *
+ * @param  {String} beanName bean id
+ * @param  {String} modelId  model id
+ * @param  {Object} metaObject
+ * @api public
+ */
+BeanFactory.prototype.registerModel = function(beanName, modelId, metaObject) {
+	var modelDefinition = null;
+	modelDefinition = this.getModelDefinition(modelId);
+	if (!modelDefinition) {
+		modelDefinition = new ModelDefinition();
+	}
+
+	var table = metaObject.table;
+	var prefix = metaObject.prefix;
+	var attributes = metaObject.attributes;
+
+	var resolvedAttributes = ModelUtil.buildModelAttribute(attributes, this);
+
+	modelDefinition.setId(beanName);
+	modelDefinition.setMid(modelId);
+	modelDefinition.setTable(table);
+	modelDefinition.setPrefix(prefix);
+	modelDefinition.setFields(resolvedAttributes['fields']);
+	modelDefinition.setBalance(resolvedAttributes['balance']);
+	modelDefinition.setRefFields(resolvedAttributes['refFields']);
+	modelDefinition.setOneToMany(resolvedAttributes['oneToMany']);
+
+	if (Utils.isNotNull(table)) {
+		this.setTableModelMap(table, modelDefinition);
+	}
+
+	this.modelMap[modelId] = modelDefinition;
+}
+
+/**
+ * BeanFactory register constraint through metaObject into BeanFactory.
+ *
+ * @param  {String} beanName bean id
+ * @param  {String} cid      constraint id
+ * @param  {Object} metaObject
+ * @api public
+ */
+BeanFactory.prototype.registerConstraint = function(beanName, cid, metaObject) {
+	var constraintDefinition = null;
+	constraintDefinition = this.getConstraintDefinition(cid);
+	if (!constraintDefinition) {
+		constraintDefinition = new ModelConstraint();
+	}
+
+	var message = metaObject.message;
+	var constraint = metaObject.constraint;
+
+	constraintDefinition.setId(beanName);
+	constraintDefinition.setCid(cid);
+	constraintDefinition.setConstraint(constraint);
+
+	this.constraints[cid] = constraintDefinition;
 }
 
 /**
@@ -2209,7 +2374,63 @@ BeanFactory.prototype.containsBeanDefinition = function(beanName) {
 BeanFactory.prototype.getAspects = function() {
 	return this.aspects;
 }
-},{"../aop/aspect":3,"../aop/framework/dynamicMetaProxy":7,"../util/aopUtil":26,"../util/beanUtil":27,"../util/constant":28,"../util/utils":34,"../util/validatorUtil":35,"./singletonBeanFactory":12,"./support/beanDefinition":13,"pomelo-logger":47}],12:[function(require,module,exports){
+
+/**
+ * BeanFactory get modelDefinition.
+ *
+ * @param  {String} modelId
+ * @return {Object} modelDefinition
+ * @api public
+ */
+BeanFactory.prototype.getModelDefinition = function(modelId) {
+	return this.modelMap[modelId];
+}
+
+/**
+ * BeanFactory get modelDefinitions.
+ *
+ * @return {Object} modelDefinition map
+ * @api public
+ */
+BeanFactory.prototype.getModelDefinitions = function() {
+	return this.modelMap;
+}
+
+/**
+ * BeanFactory get getConstraintDefinition.
+ *
+ * @param  {String} cid
+ * @return {Object} getConstraintDefinition
+ * @api public
+ */
+BeanFactory.prototype.getConstraintDefinition = function(cid) {
+	return this.constraints[cid];
+}
+
+/**
+ * BeanFactory set table model map.
+ *
+ * @param  {String} table name
+ * @param  {Object} modelDefinition
+ * @api public
+ */
+BeanFactory.prototype.setTableModelMap = function(table, modelDefinition) {
+	this.tableModelMap[table] = modelDefinition;
+}
+
+/**
+ * BeanFactory get modelDefinition by table.
+ *
+ * @param   {String} table name
+ * @return  {Object} modelDefinition
+ * @api public
+ */
+BeanFactory.prototype.getModelDefinitionByTable = function(table) {
+	return this.tableModelMap[table];
+}
+
+module.exports = BeanFactory;
+},{"../aop/aspect":3,"../aop/framework/dynamicMetaProxy":7,"../model/modelConstraint":23,"../model/modelDefinition":24,"../model/modelFilter":25,"../model/modelProxy":27,"../util/aopUtil":34,"../util/beanUtil":35,"../util/constant":36,"../util/modelUtil":39,"../util/utils":43,"../util/validatorUtil":44,"./singletonBeanFactory":12,"./support/beanDefinition":13,"pomelo-logger":56}],12:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -2230,11 +2451,10 @@ var logger = require('pomelo-logger').getLogger('bearcat', 'SingletonBeanFactory
  *
  * @api public
  */
-var SingletonBeanFactory = function() {
+var SingletonBeanFactory = function(beanFactory) {
+	this.beanFactory = beanFactory;
 	this.singletonObjects = {};
 }
-
-module.exports = SingletonBeanFactory;
 
 /**
  * SingletonBeanFactory add singleton to SingletonBeanFactory.
@@ -2262,13 +2482,11 @@ SingletonBeanFactory.prototype.containsSingleton = function(beanName) {
  * SingletonBeanFactory get singleton from SingletonBeanFactory.
  *
  * @param  {String} beanName
- * @param  {Object} beanFactory
  * @return {Object} singletonObject
  * @api public
  */
-SingletonBeanFactory.prototype.getSingleton = function(beanName, beanFactory) {
-	arguments = Array.prototype.slice.apply(arguments);
-	beanFactory = arguments.pop();
+SingletonBeanFactory.prototype.getSingleton = function(beanName) {
+	var beanFactory = this.beanFactory;
 
 	var bean = this.singletonObjects[beanName];
 	if (bean) {
@@ -2305,7 +2523,9 @@ SingletonBeanFactory.prototype.getSingletonNames = function() {
 SingletonBeanFactory.prototype.removeSingleton = function(beanName) {
 	delete this.singletonObjects[beanName];
 }
-},{"pomelo-logger":47}],13:[function(require,module,exports){
+
+module.exports = SingletonBeanFactory;
+},{"pomelo-logger":56}],13:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -2348,8 +2568,6 @@ var BeanDefinition = function() {
 	this.destroyMethodName = null;
 	this.scope = Constant.SCOPE_DEFAULT;
 }
-
-module.exports = BeanDefinition;
 
 /**
  * BeanDefinition get parentName.
@@ -2919,7 +3137,9 @@ BeanDefinition.prototype.updateSettingsOn = function(BeanDefinition, key, settin
 
 	BeanDefinition[key] = BeanUtils.getBeanSettingsArray(settingsMap);
 }
-},{"../../util/beanUtil":27,"../../util/constant":28,"../../util/utils":34}],14:[function(require,module,exports){
+
+module.exports = BeanDefinition;
+},{"../../util/beanUtil":35,"../../util/constant":36,"../../util/utils":43}],14:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -2944,8 +3164,6 @@ var Utils = require('../../util/utils');
 var BeanDefinitionVisitor = function(valueResolver) {
 	this.valueResolver = valueResolver;
 }
-
-module.exports = BeanDefinitionVisitor;
 
 /**
  * BeanDefinitionVisitor set valueResolver.
@@ -3052,7 +3270,9 @@ BeanDefinitionVisitor.prototype.visitArgumentsValues = function(beanDefinition) 
 		}
 	}
 }
-},{"../../util/constant":28,"../../util/utils":34,"pomelo-logger":47}],15:[function(require,module,exports){
+
+module.exports = BeanDefinitionVisitor;
+},{"../../util/constant":36,"../../util/utils":43,"pomelo-logger":56}],15:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -3374,7 +3594,7 @@ BeanModule.STATUS = STATUS;
 BeanModule.anonymousMeta = anonymousMeta;
 
 module.exports = BeanModule;
-},{"../../util/requestUtil":31,"../../util/utils":34}],16:[function(require,module,exports){
+},{"../../util/requestUtil":40,"../../util/utils":43}],16:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -3406,8 +3626,6 @@ var BeanWrapper = function() {
 	this.role = null; // DEPENDS_ARGS, DEPENDS_PROPS
 	this.bean = null; // bean dependency inject instance
 }
-
-module.exports = BeanWrapper;
 
 /**
  * BeanWrapper get depend type.
@@ -3571,7 +3789,9 @@ BeanWrapper.prototype.getBean = function() {
 BeanWrapper.prototype.setBean = function(bean) {
 	this.bean = bean;
 }
-},{"../../util/constant":28,"../../util/utils":34,"pomelo-logger":47}],17:[function(require,module,exports){
+
+module.exports = BeanWrapper;
+},{"../../util/constant":36,"../../util/utils":43,"pomelo-logger":56}],17:[function(require,module,exports){
 (function (process){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
@@ -3610,8 +3830,6 @@ var PlaceHolderConfigurer = function() {
 	this.cpath = DEFAULT_LOAD_PATH;
 	this.properties = {};
 }
-
-module.exports = PlaceHolderConfigurer;
 
 /**
  * PlaceHolderConfigurer post process beanFactory.
@@ -3779,8 +3997,10 @@ PlaceHolderConfigurer.prototype.setProperties = function(properties) {
 PlaceHolderConfigurer.prototype.getProperties = function() {
 	return this.properties;
 }
+
+module.exports = PlaceHolderConfigurer;
 }).call(this,require('_process'))
-},{"../../resource/propertiesLoader":24,"../../util/constant":28,"../../util/utils":34,"./beanDefinitionVisitor":14,"./placeHolderResolver":18,"_process":41}],18:[function(require,module,exports){
+},{"../../resource/propertiesLoader":32,"../../util/constant":36,"../../util/utils":43,"./beanDefinitionVisitor":14,"./placeHolderResolver":18,"_process":50}],18:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -3811,8 +4031,6 @@ var PlaceHolderResolver = function(properties) {
 	this.valueSeparator = DEFAULT_VALUE_SEPARATOR;
 	this.properties = properties;
 }
-
-module.exports = PlaceHolderResolver;
 
 /**
  * PlaceHolderResolver resolve string value.
@@ -3901,7 +4119,9 @@ PlaceHolderResolver.prototype.doReplace = function(strVal) {
 	}
 	return res;
 }
-},{"../../util/utils":34}],19:[function(require,module,exports){
+
+module.exports = PlaceHolderResolver;
+},{"../../util/utils":43}],19:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -3959,7 +4179,7 @@ Bearcat['__proto__'] = EventEmitter.prototype;
  * @param  {String} opts.BEARCAT_ENV                 setup env
  * @param  {String} opts.NODE_CPATH                  setup config path
  * @param  {String} opts.BEARCAT_CPATH               setup config path
- * @param  {String} opts.BEARCAT_HPATH               setup hot reload path, usually it is the scan source directory(app by default)
+ * @param  {String} opts.BEARCAT_HPATH               setup hot reload path(s), usually it is the scan source directory(app by default)
  * @param  {String} opts.BEARCAT_LOGGER              setup 'off' to turn off bearcat logger configuration
  * @param  {String} opts.BEARCAT_HOT                 setup 'on' to turn on bearcat hot code reload
  * @param  {String} opts.BEARCAT_ANNOTATION          setup 'off' to turn off bearcat $ based annotation
@@ -4028,6 +4248,11 @@ Bearcat.start = function(cb) {
 		this.applicationContext.setEnv(env);
 	}
 
+	if (Utils.checkCocos2dJsb()) {
+		env = 'cocos2djsb';
+		this.applicationContext.setEnv(env);
+	}
+
 	this.applicationContext.on('finishRefresh', function() {
 		self.state = STATE_STARTED;
 		env = self.applicationContext.getEnv();
@@ -4066,7 +4291,7 @@ Bearcat.stop = function() {
  */
 Bearcat.getBeanFactory = function() {
 	if (this.state <= STATE_INITED) {
-		logger.warn('Bearcat application is not running now for %j', "getBeanFactory");
+		logger.warn('Bearcat application is not running now for %s', "getBeanFactory");
 		return;
 	}
 
@@ -4081,7 +4306,7 @@ Bearcat.getBeanFactory = function() {
  */
 Bearcat.getApplicationContext = function() {
 	if (this.state <= STATE_INITED) {
-		logger.warn('Bearcat application is not running now for %j', "getApplicationContext");
+		logger.warn('Bearcat application is not running now for %s', "getApplicationContext");
 		return;
 	}
 
@@ -4103,7 +4328,7 @@ Bearcat.getApplicationContext = function() {
  */
 Bearcat.getBeanByMeta = function(meta) {
 	if (this.state <= STATE_INITED) {
-		logger.warn('Bearcat application is not running now for %j', "getBeanByMeta");
+		logger.warn('Bearcat application is not running now for %s %j', "getBeanByMeta", meta);
 		return;
 	}
 
@@ -4125,7 +4350,7 @@ Bearcat.getBeanByMeta = function(meta) {
  */
 Bearcat.getBeanByFunc = function(func) {
 	if (this.state <= STATE_INITED) {
-		logger.warn('Bearcat application is not running now for %j', "getBeanByFunc");
+		logger.warn('Bearcat application is not running now for %s', "getBeanByFunc");
 		return;
 	}
 
@@ -4224,13 +4449,11 @@ Bearcat.module = function(func, context) {
  */
 Bearcat.getBean = function(beanName) {
 	if (this.state <= STATE_INITED) {
-		logger.warn('Bearcat application is not running now for %j %j', "getBean", this.state);
+		logger.warn('Bearcat application is not running now for %s %s state: %d', "getBean", beanName, this.state);
 		return;
 	}
 
-	arguments = Array.prototype.slice.apply(arguments);
-
-	var firstarg = arguments[0];
+	var firstarg = beanName;
 	var func = "";
 	if (Utils.checkObject(firstarg)) {
 		func = "getBeanByMeta";
@@ -4262,11 +4485,34 @@ Bearcat.getBean = function(beanName) {
  */
 Bearcat.getFunction = function(beanName) {
 	if (this.state <= STATE_INITED) {
-		logger.warn('Bearcat application is not running now for %j %j', "getFunction", this.state);
+		logger.warn('Bearcat application is not running now for %s %s state: %d', "getFunction", beanName, this.state);
 		return;
 	}
 
 	return this.applicationContext.getBeanFunction(beanName);
+}
+
+/**
+ * Bearcat get model from bearcat through modelId.
+ *
+ * Examples:
+ *
+ *
+ *	  // through modelId
+ *	  var carModel = bearcat.getModel("car");
+ *
+ *
+ * @param  {String}   modelId
+ * @return {Object}   model
+ * @api public
+ */
+Bearcat.getModel = function(modelId) {
+	if (this.state <= STATE_INITED) {
+		logger.warn('Bearcat application is not running now for %s %s state: %d', "getModel", modelId, this.state);
+		return;
+	}
+
+	return this.applicationContext.getModel(modelId);
 }
 
 /**
@@ -4289,12 +4535,12 @@ Bearcat.getRoute = function(beanName, fnName) {
 		return;
 	}
 
-	var bean = Bearcat.getBean(beanName);
+	var bean = this.getBean(beanName);
 	return bean[fnName].bind(bean);
 }
 
 module.exports = Bearcat;
-},{"../package.json":44,"./beans/beanFactory":11,"./context/applicationContext":20,"./util/utils":34,"events":37,"pomelo-logger":47}],20:[function(require,module,exports){
+},{"../package.json":53,"./beans/beanFactory":11,"./context/applicationContext":20,"./util/utils":43,"events":46,"pomelo-logger":56}],20:[function(require,module,exports){
 (function (process){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
@@ -4312,8 +4558,11 @@ module.exports = Bearcat;
 var logger = require('pomelo-logger').getLogger('bearcat', 'ApplicationContext');
 var PlaceHolderConfigurer = require('../beans/support/placeHolderConfigurer');
 var AutoProxyCreator = require('../aop/autoproxy/autoProxyCreator');
+var ModelKeyMapResolver = require('../model/modelKeyMapResolver');
 var AsyncScriptLoader = require('../resource/asyncScriptLoader');
+var BootStrapLoader = require('../resource/bootStrapLoader');
 var ResourceLoader = require('../resource/resourceLoader');
+var defaultConstraints = require('../model/constraints');
 var BeanFactory = require('../beans/beanFactory');
 var EventEmitter = require('events').EventEmitter;
 var RequireUtil = require('../util/requireUtil');
@@ -4347,6 +4596,7 @@ var ApplicationContext = function(configLocations, opts) {
 	this.beanFactory = null;
 	this.startUpDate = null;
 	this.resourceLoader = null;
+	this.bootStrapLoader = null;
 	this.asyncScriptLoader = null;
 	this.cpath = DEFAULT_LOAD_PATH;
 	this.hpath = DEFAULT_HOT_RELOAD_PATH;
@@ -4437,6 +4687,21 @@ ApplicationContext.prototype.getAsyncScriptLoader = function() {
 }
 
 /**
+ * ApplicationContext get bootStrapLoader.
+ *
+ * @return  {Object} bootStrapLoader
+ * @api public
+ */
+ApplicationContext.prototype.getBootStrapLoader = function() {
+	if (this.bootStrapLoader) {
+		return this.bootStrapLoader;
+	}
+
+	this.bootStrapLoader = new BootStrapLoader();
+	return this.bootStrapLoader;
+}
+
+/**
  * ApplicationContext get metaObjects resource from contextPath.
  *
  * @param   {String} cpath contextPath
@@ -4501,6 +4766,9 @@ ApplicationContext.prototype.refresh = function(cb) {
 	// Try Async loading for dependencies
 	self.tryAsyncLoading(function() {
 
+		// Try loading from bearcat-bootstrap.js for dependencies
+		self.tryBootStrapLoading();
+
 		// Prepare beanFactory for this context
 		self.prepareBeanFactory();
 
@@ -4552,10 +4820,6 @@ ApplicationContext.prototype.prepareRefresh = function() {
 		process.env.BEARCAT_CPATH = opts['BEARCAT_CPATH'];
 	}
 
-	if (opts['BEARCAT_HPATH']) {
-		process.env.BEARCAT_HPATH = opts['BEARCAT_HPATH'];
-	}
-
 	if (opts['BEARCAT_LOGGER'] && opts['BEARCAT_LOGGER'] === 'off') {
 		process.env.BEARCAT_LOGGER = 'off';
 	}
@@ -4591,6 +4855,7 @@ ApplicationContext.prototype.prepareRefresh = function() {
 		return;
 	}
 
+	MetaUtil.cleanUp();
 	var base = this.getBase();
 
 	if (process.env.BEARCAT_LOGGER !== 'off') {
@@ -4605,18 +4870,19 @@ ApplicationContext.prototype.prepareRefresh = function() {
 				base: base
 			});
 		} else {
-			logger.error('logger file path configuration is error.');
+			// logger.error('logger file path configuration is error.');
 		}
 	}
 
 	var hpath = this.getHotPath();
-	hpath = args.hpath || args['--hpath'] || process.env.BEARCAT_HPATH || hpath;
+	// BEARCAT_HPATH can be array
+	// process.env.BEARCAT_HPATH will JSON.stringify this value
+	// so do not use process.env.BEARCAT_HPATH
+	hpath = args.hpath || args['--hpath'] || opts['BEARCAT_HPATH'] || hpath;
 	this.setHotPath(hpath);
 
 	if (process.env.BEARCAT_HOT === 'on') {
-		if (FileUtil.existsSync(hpath)) {
-			this.hotReloadFileWatch(hpath);
-		}
+		this.hotReloadFileWatch(hpath);
 	}
 }
 
@@ -4629,13 +4895,15 @@ ApplicationContext.prototype.prepareRefresh = function() {
 ApplicationContext.prototype.refreshBeanFactory = function() {
 	this.configLocations = this.getConfigLocations();
 
+	this.loadDefaultConstraints();
+
 	var len = this.configLocations.length;
 	for (var i = 0; i < len; i++) {
-		this.beanFactory.registryBeans(this.getResource(this.configLocations[i]));
+		this.beanFactory.registerBeans(this.getResource(this.configLocations[i]));
 	}
 
 	if (!len) {
-		this.beanFactory.registryBeans(this.getResource());
+		this.beanFactory.registerBeans(this.getResource());
 	}
 }
 
@@ -4645,7 +4913,7 @@ ApplicationContext.prototype.refreshBeanFactory = function() {
  * @api private
  */
 ApplicationContext.prototype.tryAsyncLoading = function(cb) {
-	if (!Utils.checkBrowser()) {
+	if (!Utils.checkBrowser() || Utils.checkCocos2dJsb()) {
 		return cb();
 	}
 
@@ -4671,6 +4939,24 @@ ApplicationContext.prototype.doAsyncLoading = function(cb) {
 }
 
 /**
+ * ApplicationContext try loading script files from bearcat-bootstrap.js when in cocos2d-js jsb env.
+ *
+ * @api private
+ */
+ApplicationContext.prototype.tryBootStrapLoading = function() {
+	if (!Utils.checkCocos2dJsb()) {
+		return;
+	}
+
+	if (Root.__bearcatData__ && Root.__bearcatData__.idPaths) {
+		idPaths = Root.__bearcatData__.idPaths;
+		var bootStrapLoader = this.getBootStrapLoader();
+
+		return bootStrapLoader.load(idPaths);
+	}
+}
+
+/**
  * ApplicationContext prepareBeanFactory.
  * register default beans into beanFactory
  *
@@ -4686,7 +4972,11 @@ ApplicationContext.prototype.prepareBeanFactory = function() {
 		placeHolderConfigurer.setConfigPath(this.cpath);
 	}
 
+	var modelKeyMapResolver = new ModelKeyMapResolver();
+
 	this.addBeanFactoryPostProcessor(placeHolderConfigurer);
+	this.addBeanFactoryPostProcessor(modelKeyMapResolver);
+
 }
 
 /**
@@ -4706,7 +4996,18 @@ ApplicationContext.prototype.registerBeanMeta = function(meta) {
 	var metaObject = {};
 	metaObject[id] = meta;
 
-	this.beanFactory.registryBeans(metaObject);
+	this.beanFactory.registerBeans(metaObject);
+}
+
+/**
+ * ApplicationContext load default constraints.
+ *
+ * @api private
+ */
+ApplicationContext.prototype.loadDefaultConstraints = function() {
+	for (var key in defaultConstraints) {
+		this.getBeanByFunc(defaultConstraints[key]);
+	}
 }
 
 /**
@@ -4754,33 +5055,105 @@ ApplicationContext.prototype.hotReloadFileWatch = function(hpath) {
 			}
 
 			if (Utils.checkFunction(meta)) {
-				meta = MetaUtil.resolveFuncAnnotation(meta);
+				meta = MetaUtil.resolveFuncAnnotation(meta, null, true);
 			}
 
 			if (Utils.checkObject(meta)) {
 				id = meta['id'];
 				var func = meta['func'];
 
-				if (id && Utils.checkFunction(func)) {
-					var beanFactory = self.getBeanFactory();
-					var beanFunc = beanFactory.getBeanFunction(id);
+				if (event == 'add') {
+					// dynamic add file
+					logger.info('bearcat reload add bean %s', id);
+					self.registerBeanMeta(meta);
+				} else {
+					if (id && Utils.checkFunction(func)) {
+						var beanFactory = self.getBeanFactory();
+						var beanFunc = beanFactory.getBeanFunction(id);
 
-					if (beanFunc) {
-						var proto = func.prototype;
+						self.doHotAddAttributes(meta, id);
+						if (beanFunc) {
+							var proto = func.prototype;
 
-						for (var key in proto) {
-							logger.info('bearcat reload %j:%j', filename, key);
-							beanFunc.prototype[key] = proto[key];
+							for (var key in proto) {
+								logger.info('bearcat reload update prototype %s:%s', id, key);
+								beanFunc.prototype[key] = proto[key];
+							}
 						}
 					}
 				}
 			}
 			self.emit('reload');
-			logger.info('Bearcat hot reloading done...');
+			logger.info('Bearcat hot reloading done ...');
 		}
 
 		setTimeout(doHotReload, s * 1000 + p + s);
 	});
+}
+
+/**
+ * ApplicationContext do hot add attributes.
+ *
+ * @param  {Object} hot reload new metaObject
+ * @param  {String} hot reload bean name
+ * @api private
+ */
+ApplicationContext.prototype.doHotAddAttributes = function(metaObject, beanName) {
+	var beanFactory = this.getBeanFactory();
+	var beanFunc = beanFactory.getBeanFunction(beanName);
+	var beanDefinition = beanFactory.getBeanDefinition(beanName);
+
+	if (!beanDefinition) {
+		return;
+	}
+
+	var beanPrototype = beanFunc.prototype;
+	var propsOn = beanDefinition.getPropsOn();
+	var props = metaObject.props;
+
+	if (!Utils.checkArray(props)) {
+		return;
+	}
+
+	for (var i = 0; i < props.length; i++) {
+		(function(w) {
+			var name = w.name;
+			var flag = 1;
+
+			for (j = 0; j < propsOn.length; j++) {
+				var p = propsOn[j];
+				if (name === p.getName()) {
+					flag = 0;
+					break;
+				}
+			}
+
+			// new prop attribute
+			if (flag) {
+				var value = w.value;
+				var ref = w.ref;
+				var key = "";
+				if (ref) {
+					key = Constant.DEFINE_GETTER_PREFIX + name;
+				}
+
+				logger.info('hot reload add attribute %s to %s', name, beanName);
+				beanPrototype.__defineGetter__(name, function() {
+					if (value) {
+						return value;
+					}
+
+					if (ref) {
+						if (!this[key]) {
+							this[key] = beanFactory.getBean(ref);
+						}
+
+						return this[key];
+					}
+				});
+			}
+		})(props[i]);
+	}
 }
 
 ApplicationContext.prototype.postProcessBeanFactory = function() {
@@ -4893,6 +5266,7 @@ ApplicationContext.prototype.doClose = function() {
 		this.closeBeanFactory();
 	}
 
+	MetaUtil.cleanUp();
 	this.beanFactory = null;
 	this.resourceLoader = null;
 	this.beanFactoryPostProcessors = [];
@@ -4927,8 +5301,6 @@ ApplicationContext.prototype.isActive = function() {
  * @api public
  */
 ApplicationContext.prototype.getBean = function(beanName) {
-	arguments = Array.prototype.slice.apply(arguments);
-
 	var beanFactory = this.getBeanFactory();
 	return beanFactory.getBean.apply(beanFactory, arguments);
 }
@@ -4947,11 +5319,14 @@ ApplicationContext.prototype.getBeanByMeta = function(meta) {
 		return;
 	}
 
-	this.registerBeanMeta(meta);
+	if (!this.getBeanDefinition(id)) {
+		this.registerBeanMeta(meta);
 
-	this.invokeBeanFactoryPostProcessors();
-	arguments = Array.prototype.slice.apply(arguments);
+		this.invokeBeanFactoryPostProcessors();
+	}
+
 	arguments[0] = id;
+
 	return this.beanFactory.getBeanProxy.apply(this.beanFactory, arguments);
 }
 
@@ -4964,18 +5339,55 @@ ApplicationContext.prototype.getBeanByMeta = function(meta) {
  */
 ApplicationContext.prototype.getBeanByFunc = function(func) {
 	var meta = MetaUtil.resolveFuncAnnotation(func);
+
 	var id = meta['id'];
 	if (!id) {
 		logger.error('ApplicationContext getBeanByFunc error meta no id, add this.$id = "yourId" to your func.');
 		return;
 	}
 
-	this.registerBeanMeta(meta);
+	if (!this.getBeanDefinition(id)) {
+		meta['lazy'] = true;
+		this.registerBeanMeta(meta);
 
-	this.invokeBeanFactoryPostProcessors();
-	arguments = Array.prototype.slice.apply(arguments);
+		this.invokeBeanFactoryPostProcessors();
+	}
+
 	arguments[0] = id;
+
 	return this.beanFactory.getBeanProxy.apply(this.beanFactory, arguments);
+}
+
+/**
+ * ApplicationContext getModel through modelId.
+ *
+ * @param   {String}   modelId
+ * @return  {Object}   model
+ * @api public
+ */
+ApplicationContext.prototype.getModel = function(modelId) {
+	if (!modelId) {
+		logger.error('ApplicationContext getModel error no modelId.');
+		return;
+	}
+
+	return this.beanFactory.getModelProxy(modelId);
+}
+
+/**
+ * ApplicationContext getModelDefinition through modelId.
+ *
+ * @param   {String}   modelId
+ * @return  {Object}   modelDefinition
+ * @api public
+ */
+ApplicationContext.prototype.getModelDefinition = function(modelId) {
+	if (!modelId) {
+		logger.error('ApplicationContext getModelDefinition error no modelId.');
+		return;
+	}
+
+	return this.beanFactory.getModelDefinition(modelId);
 }
 
 /**
@@ -5007,12 +5419,18 @@ ApplicationContext.prototype.module = function(func, context) {
 		return;
 	}
 
+	// node.js env
 	if (!Utils.checkBrowser() && Utils.isNotNull(context) && context['exports']) {
 		return context['exports'] = func;
 	}
 
-	var loader = this.getAsyncScriptLoader();
-	loader.module(id, meta);
+	// browser async load depended script files
+	if (Utils.checkBrowser()) {
+		var loader = this.getAsyncScriptLoader();
+		loader.module(id, meta);
+	}
+
+	// register current bean meta
 	return this.registerBeanMeta(meta);
 }
 
@@ -5222,7 +5640,1530 @@ ApplicationContext.prototype.getBase = function() {
 	return this.base;
 }
 }).call(this,require('_process'))
-},{"../aop/autoproxy/autoProxyCreator":4,"../beans/beanFactory":11,"../beans/support/placeHolderConfigurer":17,"../resource/asyncScriptLoader":21,"../resource/resourceLoader":25,"../util/constant":28,"../util/fileUtil":29,"../util/metaUtil":30,"../util/requireUtil":32,"../util/utils":34,"_process":41,"chokidar":46,"events":37,"pomelo-logger":47}],21:[function(require,module,exports){
+},{"../aop/autoproxy/autoProxyCreator":4,"../beans/beanFactory":11,"../beans/support/placeHolderConfigurer":17,"../model/constraints":21,"../model/modelKeyMapResolver":26,"../resource/asyncScriptLoader":28,"../resource/bootStrapLoader":29,"../resource/resourceLoader":33,"../util/constant":36,"../util/fileUtil":37,"../util/metaUtil":38,"../util/requireUtil":41,"../util/utils":43,"_process":50,"chokidar":55,"events":46,"pomelo-logger":56}],21:[function(require,module,exports){
+(function (__dirname){
+var Utils = require('../../util/utils');
+
+var Constraints = {};
+if (!Utils.checkBrowser()) {
+	var fs = require('fs');
+	var path = require('path');
+
+	fs.readdirSync(__dirname).forEach(function(filename) {
+		if (!/\.js$/.test(filename)) {
+			return;
+		}
+
+		if (filename === 'index.js') {
+			return;
+		}
+
+		var name = path.basename(filename, '.js');
+
+		function load() {
+			return require(__dirname + '/' + name);
+		}
+
+		Constraints.__defineGetter__(name, load);
+	});
+}
+
+module.exports = Constraints;
+}).call(this,"/lib/model/constraints")
+},{"../../util/utils":43,"fs":45,"path":49}],22:[function(require,module,exports){
+/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  <  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat ModelAttribute
+ * Copyright(c) 2015 fantasyni <fantasyni@163.com>
+ * MIT Licensed
+ */
+
+var Constant = require('../util/constant');
+var Utils = require('../util/utils');
+var Util = require('util');
+
+/**
+ * ModelAttribute constructor function.
+ *
+ * @api public
+ */
+var ModelAttribute = function() {
+	this.ref = null;
+	this.name = null;
+	this.type = null;
+	this.prefix = null;
+	this.default = null;
+	this.primary = false;
+	this.balance = false;
+	this.constraints = [];
+	this.expression = null;
+}
+
+/**
+ * ModelAttribute do filter attribute value.
+ *
+ * @param   {String} 	attribute value
+ * @return  {Error}  	Error
+ * @api public
+ */
+ModelAttribute.prototype.filter = function(value) {
+	if (!Utils.isNotNull(value)) {
+		return;
+	}
+
+	var r = this.filterType(value);
+	if (Utils.checkModelFilterError(r)) {
+		return r;
+	}
+
+	var key = this.name;
+	var constraints = this.constraints;
+	var constraintMethod = Constant.CONSTRAINT_METHOD;
+
+	for (var i = 0; i < constraints.length; i++) {
+		var constraint = constraints[i];
+		if (constraint && Utils.checkFunction(constraint[constraintMethod])) {
+			r = constraint[constraintMethod](key, value);
+			if (Utils.checkModelFilterError(r)) {
+				return r;
+			}
+		}
+	}
+
+	return;
+}
+
+/**
+ * ModelAttribute do filter attribute value type.
+ *
+ * @param   {String} 	attribute value
+ * @return  {Error} 	Error
+ * @api private
+ */
+ModelAttribute.prototype.filterType = function(value) {
+	var type = this.type;
+	if (!Utils.checkString(type)) {
+		return;
+	}
+
+	var Type = type;
+
+	var isType = Utils.isType(Type);
+
+	var r = isType(value);
+
+	if (r !== true) {
+		var message = 'field: %s with value: %s error, type not matched with %s';
+		return new Error(Util.format(message, this.name, value, Type));
+	}
+
+	return;
+}
+
+/**
+ * ModelAttribute do parse attribute expression.
+ *
+ * @param   {String} attribute expression
+ * @param   {Object} bean factory
+ * @api private
+ */
+ModelAttribute.prototype.parse = function(expression, beanFactory) {
+	if (!expression) {
+		return;
+	}
+
+	expression = expression.replace(/\s/g, "");
+
+	var f = expression[0];
+	if (f !== Constant.CONSTRAINT_ANNOTATION) {
+		return;
+	}
+
+	expression = expression.substr(1);
+
+	var list = expression.split(Constant.CONSTRAINT_SPLIT); // split by ;
+
+	for (var i = 0; i < list.length; i++) {
+		var name = "";
+		var value = "";
+		var index = -1;
+		var props = [];
+
+		var item = list[i];
+
+		// continue with ""
+		if (!item) {
+			continue;
+		}
+
+		// "$primary;"
+		if (item === Constant.MODEL_ATTRIBUTE_PRIMARY) {
+			this[item] = true;
+			continue;
+		}
+
+		// "$balance;"
+		if (item === Constant.MODEL_ATTRIBUTE_BALANCE) {
+			this[item] = true;
+			continue;
+		}
+
+		index = item.indexOf(":");
+		// "$type:String;default:aaa"
+		if (index != -1) {
+			var p = item.split(":");
+			name = p[0].toLowerCase();
+
+			if (p.length >= 2) {
+				value = p[1];
+				if (this.checkProps(name)) {
+					if (name === "type") {
+						value = Utils.normalizeType(value);
+					}
+
+					this[name] = value;
+					continue;
+				}
+				// max:10
+				else {
+					props.push({
+						name: name,
+						value: value
+					});
+				}
+			}
+		}
+
+		index = item.indexOf("(");
+
+		if (index != -1) {
+			name = item.substr(0, index);
+			// no prefix name
+			if (!name) {
+				continue;
+			}
+
+			var left = item.substr(index);
+			var len = left.length;
+			// no this case
+			// if (len < 1) {
+			// 	continue;
+			// }
+			var last = left[len - 1];
+			if (last !== ")") {
+				continue;
+			}
+
+			left = left.substr(1, len - 2);
+			var leftList = left.split(",");
+
+			for (var j = 0; j < leftList.length; j++) {
+				var leftProp = leftList[j].split("=");
+				var leftPropLen = leftProp.length;
+
+				if (leftPropLen < 2) {
+					continue;
+				}
+
+				if (!leftProp[0] || !leftProp[1]) {
+					continue;
+				}
+
+				props.push({
+					name: leftProp[0],
+					value: leftProp[1]
+				});
+			}
+		}
+
+		if (!name) {
+			name = item;
+		}
+
+		var constraint = beanFactory.getConstraint(name);
+		if (!constraint) {
+			continue;
+		}
+
+		var constraintDefinition = beanFactory.getConstraintDefinition(name);
+
+		var constraintExpression = constraintDefinition.getConstraint();
+		if (constraintExpression) {
+			this.parse(constraintExpression, beanFactory)
+		}
+
+		var propsLen = props.length;
+		if (propsLen) {
+			for (var k = 0; k < propsLen; k++) {
+				var prop = props[k];
+				var propName = prop['name'];
+				var propValue = prop['value'];
+				constraint[propName] = propValue;
+			}
+		}
+
+		this.addConstraints(constraint);
+	}
+}
+
+/**
+ * ModelAttribute set expression.
+ *
+ * @param   {String} expression
+ * @api public
+ */
+ModelAttribute.prototype.setExpression = function(expression) {
+	this.expression = expression;
+}
+
+/**
+ * ModelAttribute get expression.
+ *
+ * @return   {String} expression
+ * @api public
+ */
+ModelAttribute.prototype.getExpression = function() {
+	return this.expression;
+}
+
+/**
+ * ModelAttribute set ref.
+ *
+ * @param   {String} ref string.
+ * @api public
+ */
+ModelAttribute.prototype.setRef = function(ref) {
+	this.ref = ref;
+}
+
+/**
+ * ModelAttribute get ref.
+ *
+ * @return   {String} ref string.
+ * @api public
+ */
+ModelAttribute.prototype.getRef = function() {
+	return this.ref;
+}
+
+/**
+ * ModelAttribute set attribute name.
+ *
+ * @param   {String} attribute name.
+ * @api public
+ */
+ModelAttribute.prototype.setName = function(name) {
+	this.name = name;
+}
+
+/**
+ * ModelAttribute get attribute name.
+ *
+ * @return   {String} attribute name.
+ * @api public
+ */
+ModelAttribute.prototype.getName = function() {
+	return this.name;
+}
+
+/**
+ * ModelAttribute set attribute type.
+ *
+ * @param   {String} attribute type.
+ * @api public
+ */
+ModelAttribute.prototype.setType = function(type) {
+	this.type = type;
+}
+
+/**
+ * ModelAttribute get attribute type.
+ *
+ * @return   {String} attribute type.
+ * @api public
+ */
+ModelAttribute.prototype.getType = function(type) {
+	return this.type;
+}
+
+/**
+ * ModelAttribute set attribute primary.
+ *
+ * @param   {Boolean} if it is the attribute primary.
+ * @api public
+ */
+ModelAttribute.prototype.setPrimary = function(primary) {
+	this.primary = primary;
+}
+
+/**
+ * ModelAttribute get attribute primary.
+ *
+ * @return   {Boolean} attribute primary.
+ * @api public
+ */
+ModelAttribute.prototype.getPrimary = function() {
+	return this.primary;
+}
+
+/**
+ * ModelAttribute set attribute default value.
+ *
+ * @param   {String} attribute default value.
+ * @api public
+ */
+ModelAttribute.prototype.setDefault = function(defaultValue) {
+	this.default = defaultValue;
+}
+
+/**
+ * ModelAttribute get attribute default value.
+ *
+ * @return   {String} attribute default value.
+ * @api public
+ */
+ModelAttribute.prototype.getDefault = function() {
+	return this.default;
+}
+
+/**
+ * ModelAttribute set attribute prefix.
+ *
+ * @param   {String} attribute prefix.
+ * @api public
+ */
+ModelAttribute.prototype.setPrefix = function(prefix) {
+	this.prefix = prefix;
+}
+
+/**
+ * ModelAttribute get attribute prefix.
+ *
+ * @return   {String} attribute prefix.
+ * @api public
+ */
+ModelAttribute.prototype.getPrefix = function() {
+	return this.prefix;
+}
+
+/**
+ * ModelAttribute check if it is a primary attribute.
+ *
+ * @param   {Boolean} if it is a primary attribute.
+ * @api public
+ */
+ModelAttribute.prototype.isPrimary = function() {
+	return this.primary;
+}
+
+/**
+ * ModelAttribute check if it is a balance attribute.
+ *
+ * @param   {Boolean} if it is a balance attribute.
+ * @api public
+ */
+ModelAttribute.prototype.isBalance = function() {
+	return this.balance;
+}
+
+/**
+ * ModelAttribute add constraint.
+ *
+ * @param   {Object} constraint object.
+ * @api public
+ */
+ModelAttribute.prototype.addConstraints = function(constraint) {
+	this.constraints.push(constraint);
+}
+
+/**
+ * ModelAttribute check attribute properties.
+ *
+ * @param   {Boolean} check result.
+ * @api private
+ */
+ModelAttribute.prototype.checkProps = function(key) {
+	var attributes = Constant.MODEL_ATTRIBUTES;
+	for (var i = 0; i < attributes.length; i++) {
+		if (key === attributes[i]) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+module.exports = ModelAttribute;
+},{"../util/constant":36,"../util/utils":43,"util":52}],23:[function(require,module,exports){
+/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  <  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat ModelConstraint
+ * Copyright(c) 2015 fantasyni <fantasyni@163.com>
+ * MIT Licensed
+ */
+
+/**
+ * ModelConstraint constructor function.
+ *
+ * @api public
+ */
+var ModelConstraint = function() {
+	this.id = null;
+	this.cid = null;
+	this.constraint = null;
+}
+
+/**
+ * ModelConstraint set bean id.
+ *
+ * @param   {String} bean id
+ * @api public
+ */
+ModelConstraint.prototype.setId = function(id) {
+	this.id = id;
+}
+
+/**
+ * ModelConstraint get bean id.
+ *
+ * @return   {String} bean id
+ * @api public
+ */
+ModelConstraint.prototype.getId = function() {
+	return this.id;
+}
+
+/**
+ * ModelConstraint set constraint id.
+ *
+ * @param   {String} constraint id
+ * @api public
+ */
+ModelConstraint.prototype.setCid = function(cid) {
+	this.cid = cid;
+}
+
+/**
+ * ModelConstraint get bean id.
+ *
+ * @return   {String} constraint id
+ * @api public
+ */
+ModelConstraint.prototype.getCid = function() {
+	return this.cid;
+}
+
+/**
+ * ModelConstraint set constraint expression.
+ *
+ * @param   {String} constraint expression
+ * @api public
+ */
+ModelConstraint.prototype.setConstraint = function(constraint) {
+	this.constraint = constraint;
+}
+
+/**
+ * ModelConstraint get constraint expression.
+ *
+ * @return   {String} constraint expression
+ * @api public
+ */
+ModelConstraint.prototype.getConstraint = function() {
+	return this.constraint;
+}
+
+module.exports = ModelConstraint;
+},{}],24:[function(require,module,exports){
+/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  <  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat ModelDefinition
+ * Copyright(c) 2015 fantasyni <fantasyni@163.com>
+ * MIT Licensed
+ */
+
+var Utils = require('../util/utils');
+
+/**
+ * ModelDefinition constructor function.
+ *
+ * @api public
+ */
+var ModelDefinition = function() {
+	this.id = null;
+	this.mid = null;
+	this.table = null;
+	this.prefix = null;
+	this.balance = null;
+	this.fields = {};
+	this.refFields = [];
+	this.modelKeyMap = {};
+	this.oneToMany = false;
+}
+
+/**
+ * ModelDefinition set bean id.
+ *
+ * @param   {String} bean id
+ * @api public
+ */
+ModelDefinition.prototype.setId = function(id) {
+	this.id = id;
+}
+
+/**
+ * ModelDefinition get bean id.
+ *
+ * @return   {String} bean id
+ * @api public
+ */
+ModelDefinition.prototype.getId = function() {
+	return this.id;
+}
+
+/**
+ * ModelDefinition set model id.
+ *
+ * @param   {String} model id
+ * @api public
+ */
+ModelDefinition.prototype.setMid = function(mid) {
+	this.mid = mid;
+}
+
+/**
+ * ModelDefinition get model id.
+ *
+ * @return   {String} model id
+ * @api public
+ */
+ModelDefinition.prototype.getMid = function() {
+	return this.mid;
+}
+
+/**
+ * ModelDefinition set ORM table.
+ *
+ * @param   {String} ORM table
+ * @api public
+ */
+ModelDefinition.prototype.setTable = function(table) {
+	if (!table) {
+		return;
+	}
+
+	this.table = table;
+}
+
+/**
+ * ModelDefinition get ORM table.
+ *
+ * @return   {String} ORM table
+ * @api public
+ */
+ModelDefinition.prototype.getTable = function() {
+	return this.table;
+}
+
+/**
+ * ModelDefinition set model definition prefix.
+ *
+ * @param   {String} model definition prefix
+ * @api public
+ */
+ModelDefinition.prototype.setPrefix = function(prefix) {
+	if (!prefix) {
+		return;
+	}
+
+	this.prefix = prefix;
+}
+
+/**
+ * ModelDefinition get model definition prefix.
+ *
+ * @return   {String} model definition prefix
+ * @api public
+ */
+ModelDefinition.prototype.getPrefix = function() {
+	return this.prefix;
+}
+
+/**
+ * ModelDefinition set model definition balance field for ddb sharding.
+ *
+ * @param   {String} model definition balance field
+ * @api public
+ */
+ModelDefinition.prototype.setBalance = function(balance) {
+	if (!balance) {
+		return;
+	}
+
+	this.balance = balance;
+}
+
+/**
+ * ModelDefinition get model definition balance field for ddb sharding.
+ *
+ * @return   {String} model definition balance field
+ * @api public
+ */
+ModelDefinition.prototype.getBalance = function() {
+	return this.balance;
+}
+
+/**
+ * ModelDefinition set model fields.
+ *
+ * @param   {Array} model fields
+ * @api public
+ */
+ModelDefinition.prototype.setFields = function(fields) {
+	if (Utils.isNotNull(fields)) {
+		this.fields = fields;
+	}
+}
+
+/**
+ * ModelDefinition get model fields.
+ *
+ * @return   {Array} model fields
+ * @api public
+ */
+ModelDefinition.prototype.getFields = function() {
+	return this.fields;
+}
+
+/**
+ * ModelDefinition get model field by key.
+ *
+ * @return   {Object} model field
+ * @api public
+ */
+ModelDefinition.prototype.getField = function(key) {
+	return this.fields[key];
+}
+
+/**
+ * ModelDefinition add ref field name.
+ *
+ * @param   {String} ref field name
+ * @api public
+ */
+ModelDefinition.prototype.addRefField = function(refField) {
+	this.refFields.push(refField);
+}
+
+/**
+ * ModelDefinition set ref fields.
+ *
+ * @param   {Array} ref fields
+ * @api public
+ */
+ModelDefinition.prototype.setRefFields = function(refFields) {
+	if (Utils.isNotNull(refFields)) {
+		this.refFields = refFields;
+	}
+}
+
+/**
+ * ModelDefinition get ref fields.
+ *
+ * @return   {Array} ref fields
+ * @api public
+ */
+ModelDefinition.prototype.getRefFields = function() {
+	return this.refFields;
+}
+
+/**
+ * ModelDefinition set model key map used for resultSet to model object mapping.
+ *
+ * @param   {Object} model key map
+ * @api public
+ */
+ModelDefinition.prototype.setModelKeyMap = function(modelKeyMap) {
+	this.modelKeyMap = modelKeyMap;
+}
+
+/**
+ * ModelDefinition get model key map used for resultSet to model object mapping.
+ *
+ * @return   {Object} model key map
+ * @api public
+ */
+ModelDefinition.prototype.getModelKeyMap = function() {
+	return this.modelKeyMap;
+}
+
+/**
+ * ModelDefinition set model oneToMany relation.
+ *
+ * @param   {Boolean} oneToMany relation
+ * @api public
+ */
+ModelDefinition.prototype.setOneToMany = function(oneToMany) {
+	this.oneToMany = oneToMany;
+}
+
+/**
+ * ModelDefinition check model oneToMany relation.
+ *
+ * @return   {Boolean} if it is oneToMany relation
+ * @api public
+ */
+ModelDefinition.prototype.isOneToMany = function() {
+	return this.oneToMany;
+}
+
+module.exports = ModelDefinition;
+},{"../util/utils":43}],25:[function(require,module,exports){
+/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  <  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat ModelFilter
+ * Copyright(c) 2015 fantasyni <fantasyni@163.com>
+ * MIT Licensed
+ */
+
+var logger = require('pomelo-logger').getLogger('bearcat', 'ModelFilter');
+var Utils = require('../util/utils');
+
+/**
+ * ModelFilter constructor function.
+ *
+ * @api public
+ */
+var ModelFilter = function() {
+	this.modelBean = null;
+	this.modelDefinition = null;
+}
+
+/**
+ * ModelFilter set model object ref.
+ *
+ * @param   {Object} model object ref
+ * @api public
+ */
+ModelFilter.prototype.setModel = function(modelBean) {
+	this.modelBean = modelBean;
+}
+
+/**
+ * ModelFilter get model object ref.
+ *
+ * @return   {Object} model object ref
+ * @api public
+ */
+ModelFilter.prototype.getModel = function() {
+	return this.modelBean;
+}
+
+/**
+ * ModelFilter set model definition.
+ *
+ * @param   {Object} model definition
+ * @api public
+ */
+ModelFilter.prototype.setModelDefinition = function(modelDefinition) {
+	this.modelDefinition = modelDefinition;
+}
+
+/**
+ * ModelFilter get model definition.
+ *
+ * @return   {Object} model definition
+ * @api public
+ */
+ModelFilter.prototype.getModelDefinition = function() {
+	return this.modelDefinition;
+}
+
+/**
+ * ModelFilter model filter key/value attribute.
+ *
+ * @param   {String} model attribute key
+ * @param   {String} model attribute value
+ * @api public
+ */
+ModelFilter.prototype.filter = function(key, value) {
+	if (Utils.checkString(key)) {
+		return this.doFilterKey(key, value);
+	}
+
+	return this.doFilterKeys();
+}
+
+/**
+ * ModelFilter do model filter key/value attribute.
+ *
+ * @param   {String} 		model attribute key
+ * @param   {String} 		model attribute value
+ *
+ * @return  {Boolean|Error} true|false|Error
+ * @api private
+ */
+ModelFilter.prototype.doFilterKey = function(key, value) {
+	var field = this.modelDefinition.getField(key);
+	if (field) {
+		return field.filter(value);
+	}
+}
+
+/**
+ * ModelFilter do model filter key/value attributes.
+ *
+ * @param   {String} 	model attribute key
+ * @param   {String} 	model attribute value
+ *
+ * @return  {Error} 	Error
+ * @api private
+ */
+ModelFilter.prototype.doFilterKeys = function() {
+	var fields = this.modelDefinition.getFields();
+
+	for (var key in fields) {
+		var field = fields[key];
+		var value = this.modelBean[key];
+		var r = field.filter(value);
+		if (Utils.checkModelFilterError(r)) {
+			return r;
+		}
+	}
+
+	return;
+}
+
+module.exports = ModelFilter;
+},{"../util/utils":43,"pomelo-logger":56}],26:[function(require,module,exports){
+/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  <  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat ModelKeyMapResolver
+ * Copyright(c) 2015 fantasyni <fantasyni@163.com>
+ * MIT Licensed
+ */
+
+var logger = require('pomelo-logger').getLogger('bearcat', 'ModelKeyMapResolver');
+
+/**
+ * ModelKeyMapResolver constructor function.
+ *
+ * @api public
+ */
+var ModelKeyMapResolver = function() {
+
+}
+
+/**
+ * ModelKeyMapResolver post process beanFactory.
+ *
+ * @param  {Object} beanFactory
+ * @api public
+ */
+ModelKeyMapResolver.prototype.postProcessBeanFactory = function(beanFactory) {
+	this.processModelKeyMap(beanFactory);
+}
+
+/**
+ * ModelKeyMapResolver process model key map.
+ *
+ * @param  {Object} beanFactory
+ * @api public
+ */
+ModelKeyMapResolver.prototype.processModelKeyMap = function(beanFactory) {
+	var models = beanFactory.getModelDefinitions();
+
+	for (var modelId in models) {
+		var modelDefinition = models[modelId];
+		var modelKeyMap = {};
+		this.processModelDefinition(beanFactory, modelDefinition, modelKeyMap, {});
+		modelDefinition.setModelKeyMap(modelKeyMap);
+	}
+}
+
+/**
+ * ModelKeyMapResolver post model definition.
+ *
+ * @param  {Object} beanFactory
+ * @param  {Object} modelDefinition
+ * @param  {Object} modelKeyMap
+ * @param  {Object} option
+ * @api public
+ */
+ModelKeyMapResolver.prototype.processModelDefinition = function(beanFactory, modelDefinition, modelKeyMap, option) {
+	var fields = modelDefinition.getFields();
+
+	var modelId = modelDefinition.getMid();
+	var prefix = modelDefinition.getPrefix();
+	var optionPrefix = option['prefix'] || prefix;
+	var parentId = option['pid'];
+	var parentType = option['ptype'];
+	var parentField = option['pfield'];
+
+	for (var fieldName in fields) {
+		var field = fields[fieldName];
+		var fieldName = field.getName();
+		var modelRefId = field.getRef();
+		var fieldPrefix = field.getPrefix();
+		var fieldType = field.getType();
+
+		var modelKey = "";
+		if (optionPrefix) {
+			modelKey += optionPrefix;
+		}
+
+		modelKey = modelKey + fieldName;
+
+		if (modelRefId) {
+			var modelRefDefinition = beanFactory.getModelDefinition(modelRefId);
+
+			if (!modelRefDefinition) {
+				logger.warn('model field ref id %s not exsit', modelRefId);
+				continue;
+			}
+
+			var option = {
+				pid: modelId,
+				ptype: fieldType,
+				pfield: fieldName
+			};
+
+			if (fieldPrefix) {
+				option['prefix'] = fieldPrefix;
+			}
+
+			this.processModelDefinition(beanFactory, modelRefDefinition, modelKeyMap, option);
+			continue;
+		}
+
+		modelKeyMap[modelKey] = {
+			id: modelId,
+			pid: parentId,
+			ptype: parentType,
+			pfield: parentField,
+			fieldName: fieldName,
+			type: fieldType
+		};
+	}
+}
+
+module.exports = ModelKeyMapResolver;
+},{"pomelo-logger":56}],27:[function(require,module,exports){
+/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  <  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat ModelProxy
+ * Copyright(c) 2015 fantasyni <fantasyni@163.com>
+ * MIT Licensed
+ */
+
+var logger = require('pomelo-logger').getLogger('bearcat', 'ModelProxy');
+var Constant = require('../util/constant');
+var Utils = require('../util/utils');
+
+/**
+ * ModelProxy constructor function.
+ *
+ * @api public
+ */
+var ModelProxy = function() {
+	this.model = null;
+	this.modelFilter = null;
+	this.beanFactory = null;
+	this.beanDefinition = null;
+	this.modelDefinition = null;
+	this.beforeNames = [];
+	this.afterNames = [];
+	this.beforeName = null;
+	this.afterName = null;
+	this.beforeFlag = false;
+	this.afterFlag = false;
+}
+
+/**
+ * ModelProxy set key/value to model.
+ *
+ * @param  {String} 	key
+ * @param  {Object} 	value
+ * @return {Object} 	Error object when set value failed
+ * @api public
+ */
+ModelProxy.prototype.$set = function(key, value) {
+	var model = this.model;
+	this['beforeFlag'] = true; // setup before flag, enable builtin constaints by default
+	var befores = this._getFilters(Constant.MODEL_FILTER_BEFORE);
+
+	// do model before filters
+	var r = this._doFilters(befores, key, value);
+
+	if (Utils.checkModelFilterError(r)) {
+		return this._result(r);
+	}
+
+	//  setup value
+	model[key] = value;
+
+	var afters = this._getFilters(Constant.MODEL_FILTER_AFTER);
+
+	// do model after filters
+	r = this._doFilters(afters, key, value);
+
+	if (Utils.checkModelFilterError(r)) {
+		return this._result(r);
+	}
+
+	return this._result(r);
+}
+
+/**
+ * ModelProxy get data from model.
+ *
+ * @param  {String} key
+ * @return {Object} data value
+ * @api public
+ */
+ModelProxy.prototype.$get = function(key) {
+	return this.model[key];
+}
+
+/**
+ * ModelProxy pack data object to model.
+ *
+ * @param  {Object} 	data
+ * @return {Object} 	Error object when pack data failed
+ * @api public
+ */
+ModelProxy.prototype.$pack = function(data) {
+	if (!Utils.checkObject(data)) {
+		return new Error('pack data must be Object');
+	}
+
+	var model = this.model;
+
+	for (var key in data) {
+		var value = data[key];
+		model[key] = value;
+	}
+
+	this['afterFlag'] = true;
+
+	// $pack only have after filters
+	var afters = this._getFilters(Constant.MODEL_FILTER_AFTER);
+
+	// do model after filters
+	var r = this._doFilters(afters);
+
+	if (Utils.checkModelFilterError(r)) {
+		return this._result(r);
+	}
+
+	return this._result(r);
+}
+
+/**
+ * ModelProxy pack db ResultSet data to model.
+ *
+ * @param  {Object} resultSet data
+ * @return {Object|Boolean} Error|true
+ * @api public
+ */
+ModelProxy.prototype.$packResultSet = function(resultSet) {
+	if (!Utils.checkObject(resultSet)) {
+		return new Error('resultSet must be Object');
+	}
+
+	var beanFactory = this.beanFactory;
+	var resultModelId = this.modelDefinition.getMid();
+	var resultModel = this;
+
+	if (!resultModel) {
+		logger.error('packResultSet error no such result model %s', resultModelId);
+		return;
+	}
+
+	var modelKeyMap = this.modelDefinition.getModelKeyMap();
+
+	var dataResult = resultSet;
+
+	var modelResultMap = {};
+	for (var dataKey in dataResult) {
+		var dataValue = dataResult[dataKey];
+		if (Utils.checkFunction(dataValue)) {
+			continue;
+		}
+
+		var modelMap = modelKeyMap[dataKey];
+		if (!modelMap) {
+			logger.warn('packResultSet resultSet key %s does not match any model attribute', dataKey);
+			continue;
+		}
+
+		var modelId = modelMap['id'];
+		var fieldName = modelMap['fieldName'];
+		var fieldType = modelMap['type'];
+		var pid = modelMap['pid'] || modelId;
+		var pfield = modelMap['pfield'] || fieldName;
+		var ptype = modelMap['ptype'];
+
+		var model;
+		if (Utils.checkTypeArray(ptype) || Utils.checkTypeObject(ptype)) {
+			var modelResultMapKey = pid + "_" + pfield;
+			model = modelResultMap[modelResultMapKey];
+			if (!model) {
+				model = beanFactory.getModelProxy(modelId);
+				modelResultMap[modelResultMapKey] = model; // ref model object
+			}
+		} else {
+			model = this;
+		}
+
+		var r = model.$before().$set(fieldName, dataValue); // set data, do filter
+		if (Utils.checkModelFilterError(r)) {
+			return r;
+		}
+	}
+
+	this._doPackResultSet(resultModel, modelResultMap);
+}
+
+/**
+ * ModelProxy set before filter to model.
+ * filter can be String which is the name of the filter method in the model
+ * or can be Array which contains the filter methods in order
+ *
+ * @param  {String|Array} before filter
+ * @api public
+ */
+ModelProxy.prototype.$before = function(before) {
+	return this._filter(Constant.MODEL_FILTER_BEFORE, before);
+}
+
+/**
+ * ModelProxy set after filter to model.
+ * filter can be String which is the name of the filter method in the model
+ * or can be Array which contains the filter methods in order
+ *
+ * @param  {String|Array} after filter
+ * @api public
+ */
+ModelProxy.prototype.$after = function(after) {
+	return this._filter(Constant.MODEL_FILTER_AFTER, after);
+}
+
+ModelProxy.prototype.$clone = function() {
+
+}
+
+/**
+ * ModelProxy  model proxy init.
+ *
+ * @api private
+ */
+ModelProxy.prototype._modelInit = function() {
+	var beanDefinition = this.beanDefinition;
+	if (!beanDefinition) {
+		logger.error('init error no beanDefinition.');
+		return;
+	}
+
+	var self = this;
+
+	var func = beanDefinition.getFunc();
+
+	if (Utils.checkFunction(func)) {
+		var proto = func.prototype;
+		for (interface in proto) {
+			if (Utils.checkFunction(proto[interface])) {
+				(function(method) {
+					if (checkFuncName(method)) {
+						logger.error('init error proxy method interface %j the same as ModelProxy, rename this name to another.', method)
+						return;
+					};
+
+					self[method] = function() {
+						return self._modelInvoke(method, arguments);
+					};
+				})(interface);
+			}
+		}
+	}
+}
+
+/**
+ * ModelProxy model proxy invoke methods.
+ *
+ * @param  {String} invoke method name
+ * @param  {Array}  invoke arguments
+ * @return {Object} invoke result
+ * @api private
+ */
+ModelProxy.prototype._modelInvoke = function(method, args) {
+	var targetModel = this.model;
+	if (Utils.checkFunction(targetModel[method])) {
+		return targetModel[method].apply(targetModel, args);
+	} else {
+		logger.error('invoke error with %s %j', method, args);
+	}
+}
+
+/**
+ * ModelProxy do pack db ResultSet data to model.
+ *
+ * @param  {Object} resultSet data
+ * @return {Object|Boolean} Error|true
+ * @api private
+ */
+ModelProxy.prototype._doPackResultSet = function(resultModel, modelResultMap) {
+	var resultModelFields = resultModel.modelDefinition.getFields();
+	var resultModelId = resultModel.modelDefinition.getMid();
+	var beanFactory = this.beanFactory;
+
+	for (var resultFieldKey in resultModelFields) {
+		var resultField = resultModelFields[resultFieldKey];
+		var resultFieldRef = resultField.getRef();
+		var resultFieldType = resultField.getType();
+		var key = resultModelId + "_" + resultFieldKey;
+		var value = modelResultMap[key];
+
+		if (!Utils.isNotNull(value) && resultFieldRef) {
+			var refModel = beanFactory.getModelProxy(resultFieldRef);
+			if (refModel) {
+				this._doPackResultSet(refModel, modelResultMap);
+				value = refModel;
+			}
+		}
+
+		if (!Utils.isNotNull(value)) {
+			continue;
+		}
+
+		var oneToMany = false;
+		if (Utils.checkTypeArray(resultFieldType)) {
+			oneToMany = true;
+		}
+
+		if (oneToMany) {
+			var resultFieldValue = resultModel.$get(resultFieldKey);
+			if (!Utils.checkArray(resultFieldValue)) {
+				resultFieldValue = [];
+			}
+
+			resultFieldValue.push(value);
+			resultModel['model'][resultFieldKey] = resultFieldValue;
+			continue;
+		}
+
+		resultModel.$set(resultFieldKey, value);
+	}
+}
+
+/**
+ * ModelProxy do set filter to model.
+ *
+ * @param  {String}       filter type
+ * @param  {String|Array} filter
+ * @api private
+ */
+ModelProxy.prototype._filter = function(type, filter) {
+	if (type !== Constant.MODEL_FILTER_BEFORE && type !== Constant.MODEL_FILTER_AFTER) {
+		logger.warn('unknow model filter type %s', type);
+		return this;
+	}
+
+	this[type + 'Flag'] = true;
+
+	if (Utils.checkString(filter)) {
+		this[type + 'Name'] = filter;
+	}
+
+	if (Utils.checkArray(filter)) {
+		this[type + 'Names'] = filter;
+	}
+
+	return this;
+}
+
+/**
+ * ModelProxy get filters by type.
+ *
+ * @param  {String} filter type
+ * @param  {Array} 	filters
+ * @api private
+ */
+ModelProxy.prototype._getFilters = function(type) {
+	if (type !== Constant.MODEL_FILTER_BEFORE && type !== Constant.MODEL_FILTER_AFTER) {
+		return;
+	}
+
+	var filters = [];
+
+	// before filter
+	// before + after filter only do the builtin filter once
+	if (type === Constant.MODEL_FILTER_BEFORE ||
+		(type === Constant.MODEL_FILTER_AFTER && !this.beforeFlag)) {
+		if (this[type + 'Flag']) {
+			filters.push({
+				type: Constant.FILTER_BUILTIN,
+				method: Constant.FILTER_BUILTIN_METHOD // "filter"
+			});
+		}
+	}
+
+	var filterName = this[type + 'Name'];
+	if (filterName) {
+		var filterArray = this._modelInvoke(filterName);
+		if (Utils.checkArray(filterArray)) {
+			for (var i = 0; i < filterArray.length; i++) {
+				filters.push({
+					type: Constant.FILTER_MODEL,
+					method: filterArray[i]
+				});
+			}
+		}
+	}
+
+	var filterNames = this[type + 'Names'];
+	for (var j = 0; j < filterNames.length; j++) {
+		filters.push({
+			type: Constant.FILTER_MODEL,
+			method: filterNames[j]
+		});
+	}
+
+	return filters;
+}
+
+/**
+ * ModelProxy do filters with key value.
+ *
+ * @param  {Array}  filters
+ * @param  {String} key
+ * @param  {Object} value
+ * @return {Error}  Error object
+ * @api private
+ */
+ModelProxy.prototype._doFilters = function(filters, key, value) {
+	if (!filters || !filters.length) {
+		return;
+	}
+
+	var r;
+	for (var i = 0; i < filters.length; i++) {
+		var filter = filters[i];
+		var type = filter['type'];
+		var method = filter['method'];
+		if (type === Constant.FILTER_BUILTIN) {
+			r = this.modelFilter[method](key, value);
+			if (Utils.checkModelFilterError(r)) {
+				return r;
+			}
+		}
+
+		if (type === Constant.FILTER_MODEL) {
+			var args = [];
+			if (Utils.isNotNull(key)) args.push(key);
+			if (Utils.isNotNull(value)) args.push(value);
+			r = this._modelInvoke(method, args); // just call the filter method
+			if (Utils.checkModelFilterError(r)) {
+				return r;
+			}
+		}
+	}
+
+	return;
+}
+
+/**
+ * ModelProxy reset result.
+ *
+ * @param  {Object}  result
+ * @return {Object}  result
+ * @api private
+ */
+ModelProxy.prototype._result = function(r) {
+	this._reset(Constant.MODEL_FILTER_BEFORE);
+	this._reset(Constant.MODEL_FILTER_AFTER);
+
+	return r;
+}
+
+/**
+ * ModelProxy reset filter.
+ *
+ * @param  {String}  filter type
+ * @api private
+ */
+ModelProxy.prototype._reset = function(type) {
+	if (type !== Constant.MODEL_FILTER_BEFORE && type !== Constant.MODEL_FILTER_AFTER) {
+		return;
+	}
+
+	this[type + 'Flag'] = false;
+	this[type + 'Name'] = null;
+	this[type + 'Names'] = [];
+}
+
+/**
+ * ModelProxy toJSON.
+ *
+ * @api public
+ */
+ModelProxy.prototype.toJSON = function() {
+	return this.model;
+}
+
+var names = ["_modelInit", "_modelInvoke", "$set", "$pack", "$packResultSet",
+	"_doPackResultSet", "$get", "$before", "$after", "_filter", "$clone",
+	"_getFilters", "_doFilters", "_result", "_reset", "toJSON"
+];
+
+var checkFuncName = function(name) {
+	for (var i = 0; i < names.length; i++) {
+		if (name === names[i]) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+module.exports = ModelProxy;
+},{"../util/constant":36,"../util/utils":43,"pomelo-logger":56}],28:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -5425,7 +7366,44 @@ AsyncScriptLoader.prototype.setApplicationContext = function(applicationContext)
 }
 
 module.exports = AsyncScriptLoader;
-},{"../beans/support/beanModule":15,"../util/requireUtil":32,"../util/scriptUtil":33,"../util/utils":34,"pomelo-logger":47}],22:[function(require,module,exports){
+},{"../beans/support/beanModule":15,"../util/requireUtil":41,"../util/scriptUtil":42,"../util/utils":43,"pomelo-logger":56}],29:[function(require,module,exports){
+/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  <  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat BootStrapLoader
+ * Copyright(c) 2015 fantasyni <fantasyni@163.com>
+ * MIT Licensed
+ */
+
+/**
+ * BootStrapLoader constructor function.
+ *
+ * @api public
+ */
+var BootStrapLoader = function() {
+
+}
+
+/**
+ * BootStrapLoader load script files.
+ *
+ * @param  {Array}     bootstrap idPaths
+ * @api public
+ */
+BootStrapLoader.prototype.load = function(idPaths) {
+	for (var id in idPaths) {
+		var idPath = idPaths[id];
+		require(idPath);
+	}
+}
+
+module.exports = BootStrapLoader;
+},{}],30:[function(require,module,exports){
 (function (process){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
@@ -5453,9 +7431,7 @@ var Path = RequireUtil.requirePath();
  *
  * @api public
  */
-var ConfigLoader = function() {
-	// this.loadedContextBeans = {};
-}
+var ConfigLoader = function() {}
 
 module.exports = ConfigLoader;
 
@@ -5509,22 +7485,21 @@ ConfigLoader.prototype.getRecursiveScanPath = function(cpath, scanPaths, metaObj
 
 	var scan = context.scan;
 	var beans = context.beans;
-	var browser = context.browser;
+	// var browser = context.browser;
 	var imports = context.imports;
 	var namespace = context.namespace;
 	var dependencies = context.dependencies;
 
 	var dpath = Path.dirname(cpath);
 
-	if (Utils.checkString(browser)) {
-		this.getRecursiveScanPath(dpath + '/' + browser, scanPaths, metaObjects);
-		return;
-	} else if (Utils.checkArray(browser)) {
-		for (var i = 0; i < browser.length; i++) {
-			this.getRecursiveScanPath(dpath + '/' + browser[i], scanPaths, metaObjects);
-		}
-		return;
-	}
+	// if (Utils.checkString(browser)) {
+	// 	return this.getRecursiveScanPath(dpath + '/' + browser, scanPaths, metaObjects);
+	// } else if (Utils.checkArray(browser)) {
+	// 	for (var i = 0; i < browser.length; i++) {
+	// 		this.getRecursiveScanPath(dpath + '/' + browser[i], scanPaths, metaObjects);
+	// 	}
+	// 	return;
+	// }
 
 	for (var dependency in dependencies) {
 		this.getRecursiveScanPath(dpath + '/node_modules/' + dependency + '/context.json', scanPaths, metaObjects);
@@ -5581,7 +7556,6 @@ ConfigLoader.prototype.getRecursiveScanPath = function(cpath, scanPaths, metaObj
 				if (funcPath) {
 					bean['fpath'] = Path.resolve(process.cwd(), funcPath);
 				}
-				// this.loadedContextBeans[beanName] = cpath;
 			}
 		}
 	}
@@ -5599,7 +7573,7 @@ ConfigLoader.prototype.getRecursiveScanPath = function(cpath, scanPaths, metaObj
 	}
 }
 }).call(this,require('_process'))
-},{"../util/constant":28,"../util/metaUtil":30,"../util/requireUtil":32,"../util/utils":34,"./metaLoader":23,"_process":41,"pomelo-logger":47}],23:[function(require,module,exports){
+},{"../util/constant":36,"../util/metaUtil":38,"../util/requireUtil":41,"../util/utils":43,"./metaLoader":31,"_process":50,"pomelo-logger":56}],31:[function(require,module,exports){
 (function (process){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
@@ -5617,6 +7591,7 @@ ConfigLoader.prototype.getRecursiveScanPath = function(cpath, scanPaths, metaObj
 var logger = require('pomelo-logger').getLogger('bearcat', 'MetaLoader');
 var FileUtil = require('../util/fileUtil');
 var MetaUtil = require('../util/metaUtil');
+var Constant = require('../util/constant');
 var Utils = require('../util/utils');
 var path = require('path');
 
@@ -5742,17 +7717,27 @@ MetaLoader.prototype.loadPath = function(meta, path) {
 			continue;
 		}
 
+		// id by default is the file name
 		var id = Utils.getFileName(fn, '.js'.length);
 		if (m.id) {
 			id = m.id;
-			var originMeta = meta[id];
-			meta[id] = MetaUtil.mergeMeta(m, originMeta);
+		} else if (m.mid) {
+			id = m.mid + Constant.BEAN_SPECIAL_MODEL;
+		} else if (m.cid) {
+			id = m.cid + Constant.BEAN_SPECIAL_CONSTRAINT;
+		} else {
+			// ignore
+			continue;
 		}
+
+		var originMeta = meta[id];
+		meta[id] = MetaUtil.mergeMeta(m, originMeta);
 	}
+
 	return meta;
 };
 }).call(this,require('_process'))
-},{"../util/fileUtil":29,"../util/metaUtil":30,"../util/utils":34,"_process":41,"path":40,"pomelo-logger":47}],24:[function(require,module,exports){
+},{"../util/constant":36,"../util/fileUtil":37,"../util/metaUtil":38,"../util/utils":43,"_process":50,"path":49,"pomelo-logger":56}],32:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -5841,7 +7826,7 @@ PropertiesLoader.prototype.loadDir = function(meta, lpath) {
 		}
 	}
 }
-},{"../util/fileUtil":29,"../util/utils":34,"pomelo-logger":47}],25:[function(require,module,exports){
+},{"../util/fileUtil":37,"../util/utils":43,"pomelo-logger":56}],33:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -5908,7 +7893,7 @@ ResourceLoader.prototype.load = function(cpath) {
 
 	return metaObjects;
 }
-},{"./configLoader":22}],26:[function(require,module,exports){
+},{"./configLoader":30}],34:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -6001,7 +7986,7 @@ AopUtil.sortAdvisorsByOrder = function(advisors) {
 }
 
 module.exports = AopUtil;
-},{"../aop/advisor":2,"../aop/aspect":3,"./utils":34}],27:[function(require,module,exports){
+},{"../aop/advisor":2,"../aop/aspect":3,"./utils":43}],35:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -6136,7 +8121,7 @@ BeanUtils.sortBeanDefinitions = function(beanDefinitions, beanFactory) {
 }
 
 module.exports = BeanUtils;
-},{"../beans/support/beanWrapper":16,"./utils":34}],28:[function(require,module,exports){
+},{"../beans/support/beanWrapper":16,"./utils":43}],36:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -6202,16 +8187,42 @@ module.exports = {
 
 	META_PROPS: ["id", "order", "init", "destroy", "factoryBean",
 		"factoryMethod", "scope", "async", "abstract", "parent",
-		"lazy", "factoryArgs", "proxy", "aop"
+		"lazy", "factoryArgs", "proxy", "aop", "mid", "table",
+		"cid", "constraint", "prefix"
 	],
 
 	AOP_META_PROPS: ["pointcut", "advice", "order", "runtime"],
 
 	META_AOP: "aop",
 
-	META_AOP_ADVICE: "advice"
+	META_ID: "id",
+
+	META_AOP_ADVICE: "advice",
+
+	FILTER_BUILTIN: "builtin",
+	FILTER_MODEL: "model",
+	FILTER_BUILTIN_METHOD: "filter",
+
+	CONSTRAINT_ANNOTATION: "$",
+	CONSTRAINT_SPLIT: ";",
+	CONSTRAINT_METHOD: "validate",
+
+	MODEL_ATTRIBUTES: ["type", "primary", "default", "ref", "prefix"],
+	MODEL_ATTRIBUTE_PRIMARY: "primary",
+	MODEL_ATTRIBUTE_BALANCE: "balance",
+	MODEL_ATTRIBUTE_TYPE_ARRAY: "Array",
+	MODEL_ATTRIBUTE_TYPE_OBJECT: "Object",
+	MODEL_FILTER_BEFORE: 'before',
+	MODEL_FILTER_AFTER: 'after',
+
+	BEAN_SPECIAL_MODEL: "_$model",
+	BEAN_SPECIAL_CONSTRAINT: "_$constraint",
+
+	TYPE_NUMBER: "Number",
+
+	DEFINE_GETTER_PREFIX: "__"
 }
-},{}],29:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -6243,8 +8254,8 @@ FileUtil.existsSync = function() {
  *
  * @api public
  */
-FileUtil.watch = function(path, cb) {
-	cb();
+FileUtil.watch = function() {
+
 }
 
 /**
@@ -6272,7 +8283,7 @@ if (fs) {
 }
 
 module.exports = FileUtil;
-},{"fs":36}],30:[function(require,module,exports){
+},{"fs":45}],38:[function(require,module,exports){
 (function (process){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
@@ -6294,7 +8305,9 @@ var Os = RequireUtil.requireOs();
 var Utils = require('./utils');
 var EOL = Os.EOL;
 
-var MetaUtil = {};
+var MetaUtil = {
+	metaCache: {}
+};
 
 /**
  * MetaUtil merge metaObject with originMeta.
@@ -6320,12 +8333,21 @@ MetaUtil.mergeMeta = function(meta, originMeta) {
  * MetaUtil resolve function annotation like $id, $scope, $car etc.
  *
  * @param  {Function} func function annotation
- * @param  {String} func function file path
+ * @param  {String}   func function file path
+ * @param  {Boolean}  force resolve func annotation
  * @return {Object}   metaObject resolved metaObject
  * @api private
  */
-MetaUtil.resolveFuncAnnotation = function(func, fp) {
+MetaUtil.resolveFuncAnnotation = function(func, fp, force) {
 	var funcString = func.toString();
+
+	if (process.env.LOADER_BIN === 'on') {
+		force = true;
+	}
+
+	if (this.metaCache[funcString] && !force) {
+		return this.metaCache[funcString];
+	}
 
 	var funcArgsString = funcString.match(Constant.FUNC_ARGS_REGEXP);
 
@@ -6336,13 +8358,15 @@ MetaUtil.resolveFuncAnnotation = function(func, fp) {
 	}
 
 	var funcArgs = [];
+
 	if (funcArgsString) {
-		funcArgs = funcArgsString.split(",");
+		funcArgs = funcArgsString.split(',');
 	}
 
 	var meta = {};
 	var props = [];
 	var args = [];
+	var attributes = [];
 
 	var funcProps = null;
 
@@ -6380,7 +8404,13 @@ MetaUtil.resolveFuncAnnotation = function(func, fp) {
 				if (key === Constant.META_AOP && funcProps[funcKey] === true) {
 					meta[key] = this.resolvePrototypeAnnotation(func);
 				} else {
-					meta[key] = funcProps[funcKey];
+					if (key === Constant.META_ID) {
+						if (MetaUtil.checkInMetaProps(value, true)) {
+							logger.warn('bean id value must not use bearcat special bean attributes: %s', value);
+							return;
+						}
+					}
+					meta[key] = value;
 				}
 			} else {
 				if (!MetaUtil.checkInFuncArgs(funcKey, funcArgs)) {
@@ -6407,9 +8437,16 @@ MetaUtil.resolveFuncAnnotation = function(func, fp) {
 					}
 				}
 			}
+			continue;
 		} else if (MetaUtil.checkFuncPropsConfigValue(value)) {
-			// this.num = "${num}"; easy consistent configuration
+			// this.num = "${car.num}"; placeholder
 			props.push({
+				name: funcKey,
+				value: value
+			});
+		} else if (MetaUtil.checkFuncValueAnnotation(value)) {
+			// this.num = "$type:Number"; model attribute
+			attributes.push({
 				name: funcKey,
 				value: value
 			});
@@ -6447,11 +8484,31 @@ MetaUtil.resolveFuncAnnotation = function(func, fp) {
 		meta['args'] = args;
 	}
 
+	if (attributes.length) {
+		meta['attributes'] = attributes;
+	}
+
 	meta['func'] = func;
 	if (fp) {
 		meta['fpath'] = require('path').resolve(process.cwd(), fp);
 	}
 
+	var id = meta.id;
+	if (meta.id) {
+		id = meta.id;
+	} else if (meta.mid) {
+		id = meta.mid + Constant.BEAN_SPECIAL_MODEL;
+	} else if (meta.cid) {
+		id = meta.cid + Constant.BEAN_SPECIAL_CONSTRAINT;
+	} else {
+		// must have id
+	}
+
+	if (id) {
+		meta['id'] = id;
+	}
+
+	this.metaCache[funcString] = meta;
 	return meta;
 }
 
@@ -6589,11 +8646,16 @@ MetaUtil.getEvalFuncMetaProps = function(t) {
  * @return {Boolean}  true|false
  * @api private
  */
-MetaUtil.checkInMetaProps = function(funcKey) {
+MetaUtil.checkInMetaProps = function(funcKey, flag) {
 	var META_PROPS = Constant.META_PROPS;
 
+	var prefix = "";
+	if (!flag) {
+		prefix = Constant.FUNC_ANNOTATION;
+	}
+
 	for (var i = 0; i < META_PROPS.length; i++) {
-		if (Constant.FUNC_ANNOTATION + META_PROPS[i] === funcKey) {
+		if (prefix + META_PROPS[i] === funcKey) {
 			return true;
 		}
 	}
@@ -6650,6 +8712,21 @@ MetaUtil.checkFuncAnnotation = function(funcKey) {
 }
 
 /**
+ * MetaUtil check funcValue annotation.
+ *
+ * @param  {String}   funcValue function value
+ * @return {Boolean}  true|false
+ * @api private
+ */
+MetaUtil.checkFuncValueAnnotation = function(funcValue) {
+	if (!Utils.checkString(funcValue)) {
+		return false;
+	}
+
+	return this.checkFuncAnnotation(funcValue);
+}
+
+/**
  * MetaUtil check function props value.
  *
  * @param  {String}   funcKey function key
@@ -6696,9 +8773,90 @@ MetaUtil.checkFuncPropsConfigValue = function(value) {
 	return value.match(/^\$\{.*?\}$/);
 }
 
+/**
+ * MetaUtil clean up meta cache.
+ *
+ * @api public
+ */
+MetaUtil.cleanUp = function() {
+	this.metaCache = {};
+}
+
 module.exports = MetaUtil;
 }).call(this,require('_process'))
-},{"./constant":28,"./requireUtil":32,"./utils":34,"_process":41,"path":40,"pomelo-logger":47}],31:[function(require,module,exports){
+},{"./constant":36,"./requireUtil":41,"./utils":43,"_process":50,"path":49,"pomelo-logger":56}],39:[function(require,module,exports){
+/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  <  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat ModelUtils
+ * Copyright(c) 2015 fantasyni <fantasyni@163.com>
+ * MIT Licensed
+ */
+
+var ModelAttribute = require('../model/modelAttribute');
+var Constant = require('./constant');
+var Utils = require('./utils');
+var ModelUtil = {};
+
+/**
+ * ModelUtil build model attribute.
+ *
+ * @param   {Array}  model meta attributes.
+ * @param   {Object} beanFactory.
+ * @return  {Object} modelAttributes.
+ * @api public
+ */
+ModelUtil.buildModelAttribute = function(attributes, beanFactory) {
+	if (!Utils.checkArray(attributes)) {
+		return {};
+	}
+
+	var r = {};
+	var fields = {};
+	var refFields = [];
+	var oneToMany = false;
+	var balance = "";
+	for (var i = 0; i < attributes.length; i++) {
+		var attribute = attributes[i];
+		var name = attribute['name'];
+		var value = attribute['value'];
+
+		var modelAttribute = new ModelAttribute();
+		modelAttribute.setName(name);
+		modelAttribute.setExpression(value);
+		modelAttribute.parse(value, beanFactory);
+
+		fields[name] = modelAttribute;
+
+		if (modelAttribute.getRef()) {
+			refFields.push(name);
+		}
+
+		var type = modelAttribute.getType();
+		if (Utils.checkTypeArray(type)) {
+			oneToMany = true;
+		}
+
+		if (modelAttribute.isBalance()) {
+			balance = name;
+		}
+	}
+
+	return {
+		fields: fields,
+		balance: balance,
+		refFields: refFields,
+		oneToMany: oneToMany
+	};
+}
+
+module.exports = ModelUtil;
+},{"../model/modelAttribute":22,"./constant":36,"./utils":43}],40:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -6849,7 +9007,7 @@ RequestUtil.addOnload = function(head, node, callback, url) {
 }
 
 module.exports = RequestUtil;
-},{"./utils":34}],32:[function(require,module,exports){
+},{"./utils":43}],41:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -6918,7 +9076,7 @@ RequireUtils.requireUtil = function() {
 }
 
 module.exports = RequireUtils;
-},{"../../shim/builtins":45,"os":39,"path":40,"util":43}],33:[function(require,module,exports){
+},{"../../shim/builtins":54,"os":48,"path":49,"util":52}],42:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -6948,6 +9106,9 @@ var MULTI_SLASH_RE = /([^:/])\/+\//g
  * @api public
  */
 ScriptUtil.getLoaderDir = function() {
+  if (typeof location === 'undefined') {
+    location = {};
+  }
   // Extract the directory portion of a path
   // dirname("a/b/c.js?t=123#xx/zz") ==> "a/b/"
   // ref: http://jsperf.com/regex-vs-split/2
@@ -7189,7 +9350,7 @@ ScriptUtil.getLoaderDir = function() {
 }
 
 module.exports = ScriptUtil;
-},{}],34:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -7204,10 +9365,52 @@ module.exports = ScriptUtil;
  */
 
 var RequireUtil = require('./requireUtil');
+var Constant = require('./constant');
 var FileUtil = require('./fileUtil');
 var Path = RequireUtil.requirePath();
 
 var Utils = {};
+
+/**
+ * Utils normalize type
+ *
+ * @param  {String}   type
+ * @return {String}   normalized type
+ * @api public
+ */
+Utils.normalizeType = function(type) {
+	if (!Utils.checkString(type)) {
+		return;
+	}
+
+	type = type.toLowerCase();
+	var Type = type[0].toUpperCase() + type.substr(1);
+	return Type;
+}
+
+/**
+ * Utils check type array
+ *
+ * @param  {String}    type
+ * @return {Boolean}   true|false
+ * @api public
+ */
+Utils.checkTypeArray = function(type) {
+	var type = this.normalizeType(type);
+	return type === Constant.MODEL_ATTRIBUTE_TYPE_ARRAY;
+}
+
+/**
+ * Utils check type object
+ *
+ * @param  {String}    type
+ * @return {Boolean}   true|false
+ * @api public
+ */
+Utils.checkTypeObject = function(type) {
+	var type = this.normalizeType(type);
+	return type === Constant.MODEL_ATTRIBUTE_TYPE_OBJECT;
+}
 
 /**
  * Utils check type
@@ -7260,7 +9463,7 @@ Utils.checkObject = Utils.isType("Object");
 /**
  * Utils check string
  *
- * @param  {Object}   obj object
+ * @param  {String}   string
  * @return {Boolean}  true|false
  * @api public
  */
@@ -7323,7 +9526,7 @@ Utils.checkType = function(type) {
  * @api public
  */
 Utils.isNotNull = function(value) {
-	if (value !== null && typeof value !== 'undefined')
+	if (typeof value !== 'undefined' && value !== null)
 		return true;
 	return false;
 }
@@ -7571,8 +9774,32 @@ Utils.checkWebWorker = function() {
 	return this.checkBrowser() && typeof importScripts !== 'undefined' && this.checkFunction(importScripts);
 }
 
+/**
+ * Utils check model filter error
+ *
+ * @return {Boolean}  true|false
+ * @api public
+ */
+Utils.checkModelFilterError = function(r) {
+	return r !== true && this.isNotNull(r);
+}
+
+/**
+ * Utils check cocos2d-js jsb env
+ *
+ * @return {Boolean}  true|false
+ * @api public
+ */
+Utils.checkCocos2dJsb = function() {
+	if (typeof cc !== 'undefined' && cc && cc.sys && cc.sys.isNative) {
+		return true;
+	}
+
+	return false;
+}
+
 module.exports = Utils;
-},{"./fileUtil":29,"./requireUtil":32}],35:[function(require,module,exports){
+},{"./constant":36,"./fileUtil":37,"./requireUtil":41}],44:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -7593,19 +9820,45 @@ var ValidatorUtil = {};
 /**
  * ValidatorUtil validate metaObject.
  *
- * @param    {Object}   metaObject
- * @return   {Boolean}  true|false
+ * @param    {Object}   	   metaObject
+ * @return   {Boolean|Error}  true|error object
  * @api public
  */
 ValidatorUtil.metaValidator = function(metaObject) {
 	var id = metaObject.id;
+	var mid = metaObject.mid;
+	var cid = metaObject.cid;
 
-	if (!Utils.checkString(id))
+	if (!id && !mid && !cid)
+		return new Error('one of id, mid, cid must be exist');
+
+	if (Utils.isNotNull(id) && !Utils.checkString(id))
 		return new Error('id must be String');
 
+	if (Utils.isNotNull(mid) && !Utils.checkString(mid))
+		return new Error('mid must be String');
+
+	if (Utils.isNotNull(cid) && !Utils.checkString(cid))
+		return new Error('cid must be String');
+
 	var func = metaObject.func;
-	if (!func || !Utils.checkFunction(func))
+	if (!Utils.isNotNull(func) || !Utils.checkFunction(func))
 		return new Error('func must be Function');
+
+	var table = metaObject.table;
+	if (Utils.isNotNull(table) && !Utils.checkString(table)) {
+		return new Error('table must be String');
+	}
+
+	var message = metaObject.message;
+	if (Utils.isNotNull(message) && !Utils.checkString(message)) {
+		return new Error('message must be String');
+	}
+
+	var constraint = metaObject.constraint;
+	if (Utils.isNotNull(constraint) && !Utils.checkString(constraint)) {
+		return new Error('constraint must be String');
+	}
 
 	var order = metaObject.order;
 	if (Utils.isNotNull(order) && !Utils.checkNumber(order))
@@ -7635,10 +9888,6 @@ ValidatorUtil.metaValidator = function(metaObject) {
 	if (scope && scope !== Constant.SCOPE_SINGLETON && scope !== Constant.SCOPE_PROTOTYPE)
 		return new Error('scope must be singleton or prototype');
 
-	var args = metaObject.args || Constant.ARGS_DEFAULT;
-	var props = metaObject.props || Constant.PROPS_DEFAULT;
-	var factoryArgsOn = metaObject.factoryArgs || Constant.ARGS_DEFAULT;
-
 	var asyncInit = metaObject.async || Constant.ASYNC_INIT_DEFAULT;
 	if (Utils.isNotNull(asyncInit) && !Utils.checkBoolean(asyncInit))
 		return new Error('async must be Boolean');
@@ -7651,9 +9900,9 @@ ValidatorUtil.metaValidator = function(metaObject) {
 }
 
 module.exports = ValidatorUtil;
-},{"./constant":28,"./utils":34}],36:[function(require,module,exports){
+},{"./constant":36,"./utils":43}],45:[function(require,module,exports){
 
-},{}],37:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7956,7 +10205,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],38:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -7981,7 +10230,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],39:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -8028,7 +10277,7 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],40:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8256,7 +10505,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":41}],41:[function(require,module,exports){
+},{"_process":50}],50:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -8344,14 +10593,14 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],42:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],43:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8941,10 +11190,10 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":42,"_process":41,"inherits":38}],44:[function(require,module,exports){
+},{"./support/isBuffer":51,"_process":50,"inherits":47}],53:[function(require,module,exports){
 module.exports={
   "name": "bearcat",
-  "version": "0.3.18",
+  "version": "0.4.12",
   "description": "Magic, self-described javaScript objects build up elastic, maintainable front-backend javaScript applications",
   "main": "index.js",
   "bin": "./bin/bearcat-bin.js",
@@ -8992,7 +11241,7 @@ module.exports={
     "grunt-contrib-uglify": "~0.3.2"
   }
 }
-},{}],45:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -9011,7 +11260,7 @@ exports.path = require('./modules/path');
 exports.util = require('./modules/util');
 exports.os = require('./modules/os');
 require('./object');
-},{"./modules/os":48,"./modules/path":49,"./modules/process":50,"./modules/util":53,"./object":54}],46:[function(require,module,exports){
+},{"./modules/os":57,"./modules/path":58,"./modules/process":59,"./modules/util":62,"./object":63}],55:[function(require,module,exports){
 var Chokidar = {};
 
 Chokidar.watch = function() {
@@ -9019,7 +11268,7 @@ Chokidar.watch = function() {
 }
 
 module.exports = Chokidar;
-},{}],47:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 (function (process){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
@@ -9033,6 +11282,8 @@ module.exports = Chokidar;
  * Copyright(c) 2014 fantasyni <fantasyni@163.com>
  * MIT Licensed
  */
+
+var Utils = require('../lib/util/utils');
 
 function getLogger(categoryName) {
 	if (typeof console.log !== 'function') {
@@ -9051,13 +11302,26 @@ function getLogger(categoryName) {
 		// category name is __filename then cut the prefix path
 		categoryName = categoryName.replace(process.cwd(), '');
 	}
-	var logger = console;
+	var levels = ['log', 'debug', 'info', 'warn', 'error', 'trace'];
+
+	var logger = {};
+	if (Utils.checkCocos2dJsb()) {
+		for (var i = 0; i < levels.length; i++) {
+			var level = levels[i];
+			if (cc[level]) {
+				logger[level] = cc[level];
+			} else {
+				logger[level] = cc.log;
+			}
+		}
+	} else {
+		logger = console;
+	}
+
 	var pLogger = {};
 	for (var key in logger) {
 		pLogger[key] = logger[key];
 	}
-
-	var levels = ['log', 'debug', 'info', 'warn', 'error', 'trace'];
 
 	for (var i = 0; i < levels.length; i++) {
 		(function(item) {
@@ -9088,7 +11352,7 @@ module.exports = {
 	getLogger: getLogger
 }
 }).call(this,require('_process'))
-},{"_process":41}],48:[function(require,module,exports){
+},{"../lib/util/utils":43,"_process":50}],57:[function(require,module,exports){
 exports.endianness = function() {
     return 'LE'
 };
@@ -9147,7 +11411,7 @@ exports.tmpdir = exports.tmpDir = function() {
 };
 
 exports.EOL = '\n';
-},{}],49:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -9373,7 +11637,7 @@ var substr = 'ab'.substr(-1) === 'b' ? function(str, start, len) {
   return str.substr(start, len);
 };
 }).call(this,require('_process'))
-},{"_process":41}],50:[function(require,module,exports){
+},{"_process":50}],59:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -9462,7 +11726,7 @@ process.cwd = function() {
 process.chdir = function(dir) {
     throw new Error('process.chdir is not supported');
 };
-},{}],51:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -9486,11 +11750,11 @@ if (typeof Object.create === 'function') {
     ctor.prototype.constructor = ctor
   }
 }
-},{}],52:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
 	return arg && typeof arg === 'object' && typeof arg.copy === 'function' && typeof arg.fill === 'function' && typeof arg.readUInt8 === 'function';
 }
-},{}],53:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -10087,7 +12351,7 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/inherits":51,"./support/isBuffer":52,"_process":41}],54:[function(require,module,exports){
+},{"./support/inherits":60,"./support/isBuffer":61,"_process":50}],63:[function(require,module,exports){
 if (typeof Object.create != 'function') {
   Object.create = (function() {
     var Object = function() {};

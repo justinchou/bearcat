@@ -1,3 +1,59 @@
+0.4.12 / 2015-4-3
+==================
+* modelAttribute do not filter null value
+
+0.4.11 / 2015-4-1
+==================
+* improve bearcat hot reload with adding file and adding auto attribute dependency support
+
+0.4.10 / 2015-3-30
+==================
+* fix bearcat generate fpath does not generate right bug
+
+0.4.9 / 2015-3-30
+==================
+* add metaUtil resolveFuncAnnotation force refresh metaCache when in hot reload case
+
+0.4.8 / 2015-3-30
+==================
+* add metaUtil resolveFuncAnnotation metaCache to improve performance
+
+0.4.7 / 2015-3-28
+==================
+* review getBean process, make it faster about 3 times then before
+
+0.4.6 / 2015-3-24
+==================
+* getBeanByFunc should make the bean lazy by default
+
+0.4.5 / 2015-3-20
+==================
+* fix getBean by function no id failed error
+
+0.4.4 / 2015-3-17
+==================
+* warn bean id value must not use bearcat special bean attributes
+
+0.4.3 / 2015-3-5
+==================
+* update bearcat command
+
+0.4.2 / 2015-3-4
+==================
+* add bearcat cocos2d-js jsb env support
+
+0.4.1 / 2015-3-2
+==================
+* fix model default number attribute should do parseInt
+
+0.4.0 / 2015-2-27
+==================
+* add bearcat model abstraction ,see [bearcat model](http://bearcatjs.org/guide/model.html)
+
+0.3.19 / 2015-2-26
+==================
+* review codes and make some improvements
+
 0.3.18 / 2015-2-14
 ===================
 * add BEARCAT_FUNCTION_STRING flag to force use funcString to resolve $ props, see [example](https://github.com/bearcatjs/bearcat/tree/master/examples/state_file_scope_var)
