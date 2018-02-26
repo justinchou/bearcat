@@ -1,6 +1,6 @@
 {
   "name": "bearcat",
-  "version": "0.4.12",
+  "version": "1.0.2",
   "description": "Magic, self-described javaScript objects build up elastic, maintainable front-backend javaScript applications",
   "main": "index.js",
   "bin": "./bin/bearcat-bin.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bearcatjs/bearcat.git"
+    "url": "https://github.com/justinchou/bearcatjs.git"
   },
   "keywords": [
     "di",
