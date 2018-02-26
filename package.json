@@ -1,5 +1,5 @@
 {
-  "name": "bearcat",
+  "name": "bearcatjs",
   "version": "1.0.2",
   "description": "Magic, self-described javaScript objects build up elastic, maintainable front-backend javaScript applications",
   "main": "index.js",
