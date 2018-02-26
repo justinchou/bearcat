@@ -6,11 +6,11 @@ Bearcat makes plain javaScript object magic and expressive, which makes it easy 
 ![](http://bearcatjs.github.io/bearcat/images/bearcat-logo.png)
 [![Build Status](https://travis-ci.org/bearcatjs/bearcat.svg?branch=master)](https://travis-ci.org/bearcatjs/bearcat)
 
- * Homepage: <http://bearcatjs.org/>
- * Guide: <http://bearcatjs.org/guide/>
- * API Reference: <http://bearcatjs.org/api/>
- * Examples: <http://bearcatjs.org/examples/>
- * Blog: <http://bearcatjs.org/blog/>
+ * Homepage: <http://bearcatjs.cn/>
+ * Guide: <http://bearcatjs.cn/guide/>
+ * API Reference: <http://bearcatjs.cn/api/>
+ * Examples: <http://bearcatjs.cn/examples/>
+ * Blog: <http://bearcatjs.cn/blog/>
  * Mailing list: <https://groups.google.com/group/bearcatjs/>
  * Wiki: <https://github.com/bearcatjs/bearcat/wiki/>
  * Issues: <https://github.com/bearcatjs/bearcat/issues/>
