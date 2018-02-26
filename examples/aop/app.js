@@ -8,7 +8,6 @@
 
 'use strict';
 
-
 let Bearcat = require('bearcat');
 let configPaths = [require.resolve('./context.json')];
 

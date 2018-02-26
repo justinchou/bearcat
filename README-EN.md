@@ -1,19 +1,19 @@
 ## BearcatJS
 
-BearcatJS 从 Bearcat 克隆而来, 大部分工作已经完成, 但是似乎原来项目工程很久没有维护, 所以创建分支继续前人的工作.
+BearcatJS is forked from Bearcat, most the work are done but seems no more maintains, so fork this project to continue.
 
-Bearcat makes plain javaScript object magic and expressive, which makes it easy to resolve dependency through DI and declarative middleware service through AOP. BearcatJS supports frontend browser, backend [node.js](http://nodejs.org/) , and javaScript based hybrid apps, all you write are plain old javaScript objects, so codes can be easilly shared. BearcatJS provides an infrastructural backbone to manage business objects so that developers can focus on application-level business logic. 
+BearcatJS makes plain javaScript object magic and expressive, which makes it easy to resolve dependency through DI and declarative middleware service through AOP. BearcatJS supports frontend browser, backend [node.js](http://nodejs.org/) , and javaScript based hybrid apps, all you write are plain old javaScript objects, so codes can be easilly shared. BearcatJS provides an infrastructural backbone to manage business objects so that developers can focus on application-level business logic. 
 
 > ###Magic, self-described javaScript objects build up elastic, maintainable front-backend javaScript applications
  
 ![](http://bearcatjs.github.io/bearcat/images/bearcat-logo.png)
 [![Build Status](https://travis-ci.org/bearcatjs/bearcat.svg?branch=master)](https://travis-ci.org/bearcatjs/bearcat)
 
- * Homepage: <http://bearcatjs.cn/>
- * Guide: <http://bearcatjs.cn/guide/>
- * API Reference: <http://bearcatjs.cn/api/>
- * Examples: <http://bearcatjs.cn/examples/>
- * Blog: <http://bearcatjs.cn/blog/>
+ * Homepage: <http://bearcatjs.com/>
+ * Guide: <http://bearcatjs.com/guide/>
+ * API Reference: <http://bearcatjs.com/api/>
+ * Examples: <http://bearcatjs.com/examples/>
+ * Blog: <http://bearcatjs.com/blog/>
  * Mailing list: <https://groups.google.com/group/bearcatjs/>
  * Wiki: <https://github.com/bearcatjs/bearcat/wiki/>
  * Issues: <https://github.com/bearcatjs/bearcat/issues/>
