@@ -7,7 +7,7 @@ var hotPath2 = path.dirname(contextPath) + '/hot2';
 bearcat.createApp([contextPath], {
 	BEARCAT_HOT: 'on',
 	BEARCAT_HPATH: [hotPath, hotPath2]
-		// BEARCAT_HPATH: hotPath
+	// BEARCAT_HPATH: hotPath
 });
 
 // bearcat.start(function() {
@@ -28,6 +28,7 @@ bearcat.start(function() {
 	// function from bearcat.getFunction
 	var tank = new Tank();
 	var tank2 = new Tank();
+	var tank3 = bearcat.getBean('tank');
 
 	var r = car.run();
 	console.log(r);
@@ -37,6 +38,10 @@ bearcat.start(function() {
 
 	r = tank.run();
 	console.log(r);
+    r = tank2.run();
+    console.log(r);
+    r = tank3.run();
+    console.log(r);
 
 	var hotCarPath = require.resolve('../../examples/hot_reload/hot/car.js');
 	var hotBusPath = require.resolve('../../examples/hot_reload/hot/bus.js');
@@ -59,17 +64,28 @@ bearcat.start(function() {
 			console.log(r);
 
 			var bus2 = bearcat.getBean('bus');
-			console.log(bus === bus2);
-			console.log('bus2~~~~~~');
 
 			r = bus2.run();
+			r = bus2.run();
 			console.log(r);
+			// false: 因为bus是prototype
+            console.log(bus === bus2);
 
 			r = tank.run();
 			console.log(r);
 
 			r = tank2.run();
 			console.log(r);
-		}, 5000);
-	}, 2000);
+			// false: 因为一个new 一个 getBean, new是直接创建, 非IOC.
+			console.log(tank2 === tank3);
+
+			r = tank3.run();
+			console.log(r);
+			var tank4 = bearcat.getBean('tank');
+			// true: 因为tank是prototype, 通过getBean获取的是相同的对象
+			console.log(tank3 === tank4);
+
+			bearcat.stop();
+		}, 6000);
+	}, 1000);
 });

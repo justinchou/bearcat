@@ -3,13 +3,13 @@ var Tank = function() {
 }
 
 Tank.prototype.run = function() {
-	console.log('tank hot run ...');
+	console.log('HOTTAN: tank hot run ...');
 	return 'tank hot ' + this.getNum();
 }
 
 Tank.prototype.getNum = function() {
 	if (!this.num) {
-		console.log('set num');
+		console.log('HOTTAN: set num');
 		this.num = 100;
 	}
 
@@ -17,3 +17,21 @@ Tank.prototype.getNum = function() {
 }
 
 module.exports = Tank;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

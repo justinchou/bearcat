@@ -7,14 +7,32 @@ var Bus = function() {
 }
 
 Bus.prototype.run = function() {
-	console.log('Bus hot run ~~~~~~~~~~~');
-	console.log(this);
+	console.log('HOTBUS: Bus hot run ~~~~~~~~~~~');
+	console.log('HOTBUS: ', this);
 	this.$car.run();
 	this.$tank.run();
 	return 'bus hot';
 }
 
 module.exports = Bus;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

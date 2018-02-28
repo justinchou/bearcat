@@ -4,6 +4,7 @@ var Bus = function() {
 }
 
 Bus.prototype.run = function() {
+    console.log('BUS: run bus...');
 	return 'bus';
 }
 

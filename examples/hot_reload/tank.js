@@ -3,8 +3,8 @@ var Tank = function() {
 }
 
 Tank.prototype.run = function() {
-	console.log('tank run ...');
-	return 'tank run';
+	console.log('TAN: tank run ...');
+	return 'tank';
 }
 
 module.exports = Tank;
