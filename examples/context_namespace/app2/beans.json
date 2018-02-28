@@ -1,4 +1,9 @@
 {
 	"name": "beans",
-	"scan": ""
+	"namespace": "app2",
+	"scan": "",
+	"beans": [{
+		"id": "car",
+		"func": "car"
+	}]
 }

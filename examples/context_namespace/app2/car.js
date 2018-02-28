@@ -1,12 +1,10 @@
 var Car = function() {
-	this.$id = "car2";
-	this.$Ncar = "app:car";
+	this.$id = "car";
 }
 
 Car.prototype.run = function() {
-	console.log('run car...');
-	var r = this.$Ncar.run();
-	return 'car ' + r;
+	console.log('run car2...');
+	return 'car 2';
 }
 
 module.exports = Car;
