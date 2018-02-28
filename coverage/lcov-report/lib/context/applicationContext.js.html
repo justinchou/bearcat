@@ -20,14 +20,14 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">79.67% </span>
+        <span class="strong">80.61% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>337/423</span>
+        <span class='fraction'>341/423</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">53.25% </span>
+        <span class="strong">55.62% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>90/169</span>
+        <span class='fraction'>94/169</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">87.32% </span>
@@ -35,13 +35,13 @@
         <span class='fraction'>62/71</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">79.67% </span>
+        <span class="strong">80.61% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>337/423</span>
+        <span class='fraction'>341/423</span>
       </div>
     </div>
   </div>
-  <div class='status-line medium'></div>
+  <div class='status-line high'></div>
 <pre><table class="coverage">
 <tr><td class="line-count quiet">1
 2
@@ -1490,13 +1490,13 @@
 <span class="cline-any cline-yes">61×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">61×</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1513,7 +1513,7 @@
 <span class="cline-any cline-yes">61×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">61×</span>
-<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-yes">27×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1648,18 +1648,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">61×</span>
-<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-yes">27×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-yes">27×</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">61×</span>
-<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-yes">27×</span>
 <span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2619,14 +2619,14 @@ ApplicationContext.prototype.prepareRefresh = function() {
 	MetaUtil.cleanUp();
 	var base = this.getBase();
 &nbsp;
-	<span class="missing-if-branch" title="if path not taken" >I</span>if (process.env.BEARCAT_LOGGER !== 'off') {
-<span class="cstat-no" title="statement not covered" >		var originLoggerConfigPath = Path.join(cpath, Constant.LOGPATH);</span>
-<span class="cstat-no" title="statement not covered" >		var presentLoggerConfigPath = Path.join(cpath, env, Constant.LOGPATH);</span>
-<span class="cstat-no" title="statement not covered" >		if (FileUtil.existsSync(originLoggerConfigPath)) {</span>
+	if (process.env.BEARCAT_LOGGER !== 'off') {
+		var originLoggerConfigPath = Path.join(cpath, Constant.LOGPATH);
+		var presentLoggerConfigPath = Path.join(cpath, env, Constant.LOGPATH);
+		<span class="missing-if-branch" title="if path not taken" >I</span>if (FileUtil.existsSync(originLoggerConfigPath)) {
 <span class="cstat-no" title="statement not covered" >			require('pomelo-logger').configure(originLoggerConfigPath, {</span>
 				base: base
 			});
-		} else <span class="cstat-no" title="statement not covered" >if (FileUtil.existsSync(presentLoggerConfigPath)) {</span>
+		} else <span class="missing-if-branch" title="if path not taken" >I</span>if (FileUtil.existsSync(presentLoggerConfigPath)) {
 <span class="cstat-no" title="statement not covered" >			require('pomelo-logger').configure(presentLoggerConfigPath, {</span>
 				base: base
 			});
@@ -2642,7 +2642,7 @@ ApplicationContext.prototype.prepareRefresh = function() {
 	hpath = args.hpath || args['--hpath'] || opts['BEARCAT_HPATH'] || hpath;
 	this.setHotPath(hpath);
 &nbsp;
-	<span class="missing-if-branch" title="else path not taken" >E</span>if (process.env.BEARCAT_HOT === 'on') {
+	if (process.env.BEARCAT_HOT === 'on') {
 		this.hotReloadFileWatch(hpath);
 	}
 }
@@ -3439,7 +3439,7 @@ ApplicationContext.prototype.getBase = function() {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Feb 28 2018 11:51:32 GMT+0800 (CST)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Feb 28 2018 12:03:17 GMT+0800 (CST)
 </div>
 </div>
 <script src="../../prettify.js"></script>

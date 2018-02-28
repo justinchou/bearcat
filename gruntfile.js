@@ -41,7 +41,7 @@ module.exports = function (grunt) {
                 options: {
                     coverage: true,
                     reportFormats: ['lcov'],
-                    root: '.',
+                    root: './lib/',
                     recursive: true
                 },
                 src: src
