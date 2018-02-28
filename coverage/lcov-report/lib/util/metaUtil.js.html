@@ -20,24 +20,24 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">92.46% </span>
+        <span class="strong">85.25% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>184/199</span>
+        <span class='fraction'>185/217</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">85.85% </span>
+        <span class="strong">79.82% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>91/106</span>
+        <span class='fraction'>91/114</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">94.44% </span>
+        <span class="strong">89.47% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>17/18</span>
+        <span class='fraction'>17/19</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">92.93% </span>
+        <span class="strong">86.45% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>184/198</span>
+        <span class='fraction'>185/214</span>
       </div>
     </div>
   </div>
@@ -562,7 +562,38 @@
 517
 518
 519
-520</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -803,12 +834,43 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1322,12 +1384,43 @@ MetaUtil.resolveMetaAnnotation = <span class="fstat-no" title="function not cove
 <span class="cstat-no" title="statement not covered" >        return;</span>
     }
 <span class="cstat-no" title="statement not covered" >    var m = MetaUtil.resolveFuncAnnotation(meta['func'], fp, force);</span>
+    // console.log('====', m);
 <span class="cstat-no" title="statement not covered" >    for (var i in meta) {</span>
-    	// id, func use Meta data as main config, others prefer function settings first.
-		// todo merge args, props... array config
-<span class="cstat-no" title="statement not covered" >        if (['func', 'id'].indexOf(i) === -1 &amp;&amp; m[i] === undefined) <span class="cstat-no" title="statement not covered" >m[i] = meta[i];</span></span>
+<span class="cstat-no" title="statement not covered" >        if (i === 'func') <span class="cstat-no" title="statement not covered" >continue;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (['args', 'props', 'factoryArgs'].indexOf(i) !== -1) {</span>
+<span class="cstat-no" title="statement not covered" >        	if (!meta[i]) <span class="cstat-no" title="statement not covered" >continue;</span></span>
+<span class="cstat-no" title="statement not covered" >        	if (!m[i]) <span class="cstat-no" title="statement not covered" >m[i] = [];</span></span>
+<span class="cstat-no" title="statement not covered" >            MetaUtil.overrideArray(meta[i], m[i]);</span>
+<span class="cstat-no" title="statement not covered" >			continue;</span>
+		}
+<span class="cstat-no" title="statement not covered" >        m[i] = meta[i];</span>
     }
+    // console.log('----', m);
 <span class="cstat-no" title="statement not covered" >    return m;</span>
+}
+&nbsp;
+/**
+ * override array item by name
+ *
+ * override item in sarr into tarr
+ *
+ * @param {Array} sarr source array
+ * @param {Array} tarr target array
+ */
+MetaUtil.overrideArray = <span class="fstat-no" title="function not covered" >function (sarr, tarr) {</span>
+<span class="cstat-no" title="statement not covered" >    for (var i = 0; i &lt; sarr.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >    	var s = sarr[i];</span>
+<span class="cstat-no" title="statement not covered" >        for (var j = 0; j &lt; tarr.length; j++) {</span>
+<span class="cstat-no" title="statement not covered" >        	var t = tarr[j];</span>
+<span class="cstat-no" title="statement not covered" >        	if (s.name === t.name) {</span>
+<span class="cstat-no" title="statement not covered" >        		tarr.splice(j, 1, s);</span>
+<span class="cstat-no" title="statement not covered" >        		break;</span>
+			}
+		}
+<span class="cstat-no" title="statement not covered" >		if (tarr.indexOf(s) === -1) {</span>
+<span class="cstat-no" title="statement not covered" >        	tarr.push(s);</span>
+		}
+	}
 }
 &nbsp;
 /**
@@ -1606,7 +1699,7 @@ module.exports = MetaUtil;</pre></td></tr>
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Feb 28 2018 12:03:17 GMT+0800 (CST)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Feb 28 2018 18:23:21 GMT+0800 (CST)
 </div>
 </div>
 <script src="../../prettify.js"></script>

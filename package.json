@@ -26,7 +26,6 @@
     "magic, self-described javaScript objects"
   ],
   "dependencies": {
-    "bearcat": "^0.4.29",
     "chokidar": "^2.0.2",
     "commander": "^2.14.1",
     "pomelo-logger": "^0.1.7"

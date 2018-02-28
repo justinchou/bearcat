@@ -8,7 +8,7 @@
 
 'use strict';
 
-let Bearcat = require('bearcat');
+let Bearcat = require('../../index');
 let configPaths = [require.resolve('./context.json')];
 
 Bearcat.createApp(configPaths, {});

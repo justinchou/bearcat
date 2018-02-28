@@ -36,7 +36,7 @@ for (var i = 0; i < dirs.length; i++) {
 	var opts = {
 		context: dirPath + '/context.json',
 		output: dirPath + '/bearcat-bootstrap.js'
-	}
+	};
 
 	if (fs.existsSync(examplesDir + '/' + dirName + '/config')) {
 		opts['config'] = configPath;

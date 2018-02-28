@@ -1,4 +1,4 @@
-var bearcat = require('bearcat');
+var bearcat = require('../../../index');
 
 var contextPath = require.resolve('./context.json');
 
