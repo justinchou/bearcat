@@ -1,0 +1,3158 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for lib/beans/beanFactory.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">lib/beans/</a> beanFactory.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">99.05% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>416/420</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">94.16% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>129/137</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">98.04% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>50/51</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">99.05% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>416/420</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757
+758
+759
+760
+761
+762
+763
+764
+765
+766
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777
+778
+779
+780
+781
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798
+799
+800
+801
+802
+803
+804
+805
+806
+807
+808
+809
+810
+811
+812
+813
+814
+815
+816
+817
+818
+819
+820
+821
+822
+823
+824
+825
+826
+827
+828
+829
+830
+831
+832
+833
+834
+835
+836
+837
+838
+839
+840
+841
+842
+843
+844
+845
+846
+847
+848
+849
+850
+851
+852
+853
+854
+855
+856
+857
+858
+859
+860
+861
+862
+863
+864
+865
+866
+867
+868
+869
+870
+871
+872
+873
+874
+875
+876
+877
+878
+879
+880
+881
+882
+883
+884
+885
+886
+887
+888
+889
+890
+891
+892
+893
+894
+895
+896
+897
+898
+899
+900
+901
+902
+903
+904
+905
+906
+907
+908
+909
+910
+911
+912
+913
+914
+915
+916
+917
+918
+919
+920
+921
+922
+923
+924
+925
+926
+927
+928
+929
+930
+931
+932
+933
+934
+935
+936
+937
+938
+939
+940
+941
+942
+943
+944
+945
+946
+947
+948
+949
+950
+951
+952
+953
+954
+955
+956
+957
+958
+959
+960
+961
+962
+963
+964
+965
+966
+967
+968
+969
+970
+971
+972
+973
+974
+975
+976
+977
+978
+979
+980
+981
+982
+983
+984
+985
+986
+987
+988
+989
+990
+991
+992
+993
+994
+995
+996
+997
+998
+999
+1000
+1001
+1002
+1003
+1004
+1005
+1006
+1007
+1008
+1009
+1010
+1011
+1012
+1013
+1014
+1015
+1016
+1017
+1018
+1019
+1020
+1021
+1022
+1023
+1024
+1025
+1026
+1027
+1028
+1029
+1030
+1031
+1032</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">325×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">324×</span>
+<span class="cline-any cline-yes">324×</span>
+<span class="cline-any cline-yes">324×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">324×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">373×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">324×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">324×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">321×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">320×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">320×</span>
+<span class="cline-any cline-yes">307×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">373×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">373×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">372×</span>
+<span class="cline-any cline-yes">372×</span>
+<span class="cline-any cline-yes">372×</span>
+<span class="cline-any cline-yes">372×</span>
+<span class="cline-any cline-yes">372×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">372×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">165×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">165×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">164×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">161×</span>
+<span class="cline-any cline-yes">161×</span>
+<span class="cline-any cline-yes">161×</span>
+<span class="cline-any cline-yes">161×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">160×</span>
+<span class="cline-any cline-yes">160×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">160×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">160×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">160×</span>
+<span class="cline-any cline-yes">160×</span>
+<span class="cline-any cline-yes">160×</span>
+<span class="cline-any cline-yes">33×</span>
+<span class="cline-any cline-yes">33×</span>
+<span class="cline-any cline-yes">33×</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">160×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">164×</span>
+<span class="cline-any cline-yes">164×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">164×</span>
+<span class="cline-any cline-yes">164×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">321×</span>
+<span class="cline-any cline-yes">321×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">320×</span>
+<span class="cline-any cline-yes">320×</span>
+<span class="cline-any cline-yes">51×</span>
+<span class="cline-any cline-yes">51×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51×</span>
+<span class="cline-any cline-yes">35×</span>
+<span class="cline-any cline-yes">35×</span>
+<span class="cline-any cline-yes">34×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">51×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">320×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">162×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">162×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">420×</span>
+<span class="cline-any cline-yes">536×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">536×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">536×</span>
+<span class="cline-any cline-yes">536×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">358×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">528×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">515×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">528×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">535×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">358×</span>
+<span class="cline-any cline-yes">358×</span>
+<span class="cline-any cline-yes">358×</span>
+<span class="cline-any cline-yes">356×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">358×</span>
+<span class="cline-any cline-yes">358×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">358×</span>
+<span class="cline-any cline-yes">358×</span>
+<span class="cline-any cline-yes">358×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">358×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-yes">211×</span>
+<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">150×</span>
+<span class="cline-any cline-yes">150×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">150×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">148×</span>
+<span class="cline-any cline-yes">148×</span>
+<span class="cline-any cline-yes">148×</span>
+<span class="cline-any cline-yes">148×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">61×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">326×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-yes">159×</span>
+<span class="cline-any cline-yes">159×</span>
+<span class="cline-any cline-yes">159×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">161×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-yes">159×</span>
+<span class="cline-any cline-yes">159×</span>
+<span class="cline-any cline-yes">159×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">161×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">711×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">528×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">163×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">149×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2310×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">119×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">33×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">66×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">400×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span></td><td class="text"><pre class="prettyprint lang-js">/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  &lt;  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat BeanFactory
+ * Copyright(c) 2015 fantasyni &lt;fantasyni@163.com&gt;
+ * MIT Licensed
+ */
+&nbsp;
+var logger = require('pomelo-logger').getLogger('bearcat', 'BeanFactory');
+var DynamicMetaProxy = require('../aop/framework/dynamicMetaProxy');
+var SingletonBeanFactory = require('./singletonBeanFactory');
+var ModelConstraint = require('../model/modelConstraint');
+var ModelDefinition = require('../model/modelDefinition');
+var BeanDefinition = require('./support/beanDefinition');
+var ValidatorUtil = require('../util/validatorUtil');
+var ModelFilter = require('../model/modelFilter');
+var ModelProxy = require('../model/modelProxy');
+var ModelUtil = require('../util/modelUtil');
+var Constant = require('../util/constant');
+var BeanUtil = require('../util/beanUtil');
+var AopUtil = require('../util/aopUtil');
+var Aspect = require('../aop/aspect');
+var Utils = require('../util/utils');
+&nbsp;
+/**
+ * BeanFactory constructor function.
+ *
+ * @api public
+ */
+var BeanFactory = function() {
+	this.aspects = [];
+	this.modelMap = {};
+	this.initCbMap = {};
+	this.beanCurMap = {};
+	this.constraints = {};
+	this.tableModelMap = {};
+	this.beanFunctions = {};
+	this.beanDefinitions = {};
+	this.beanPostProcessors = [];
+	this.singletonBeanFactory = new SingletonBeanFactory(this);
+}
+&nbsp;
+/**
+ * BeanFactory get bean instance through BeanFactory IoC container.
+ *
+ * @param  {String} beanName
+ * @return {Object} bean object
+ * @api public
+ */
+BeanFactory.prototype.getBean = function(beanName) {
+	if (this.beanCurMap[beanName]) {
+		logger.error("circle reference beanName " + beanName + " is in creating");
+		return;
+	}
+&nbsp;
+	this.beanCurMap[beanName] = true;
+	var beanObject = this.doGetBean.apply(this, arguments);
+	delete this.beanCurMap[beanName];
+&nbsp;
+	return beanObject;
+}
+&nbsp;
+/**
+ * BeanFactory get bean proxy through BeanFactory IoC container for lazy init bean.
+ * when invoke bean proxy, proxy will invoke getBean to get the target bean
+ *
+ * @param  {String} beanName
+ * @return {Object} bean proxy object
+ * @api public
+ */
+BeanFactory.prototype.getBeanProxy = function(beanName) {
+	return this.doGetBeanProxy.apply(this, arguments);
+}
+&nbsp;
+/**
+ * BeanFactory get model through BeanFactory IoC container.
+ *
+ * @param  {String} modelId
+ * @return {Object} model proxy object
+ * @api public
+ */
+BeanFactory.prototype.getModelProxy = function(modelId) {
+	return this.doGetModelProxy(modelId);
+}
+&nbsp;
+/**
+ * BeanFactory get constraint through BeanFactory IoC container.
+ *
+ * @param  {String} cid
+ * @return {Object} constraint bean object
+ * @api public
+ */
+BeanFactory.prototype.getConstraint = function(cid) {
+	return this.doGetConstraint(cid);
+}
+&nbsp;
+/**
+ * BeanFactory do get bean instance through BeanFactory IoC container.
+ *
+ * @param  {String} beanName
+ * @return {Object} bean object
+ * @api private
+ */
+BeanFactory.prototype.doGetBean = function(beanName) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+&nbsp;
+	if (!beanDefinition) {
+		logger.error('BeanFactory beanDefinition null for %j', beanName);
+		return null;
+	}
+&nbsp;
+	if (beanDefinition.isAbstract()) {
+		logger.warn('abstract bean can not get bean instance, you can use bearcat.getFunction to get constructor function of the bean');
+		return this.getBeanFunction(beanName);
+	}
+&nbsp;
+	if (beanDefinition.hasParentBean()) {
+		beanDefinition = this.setParentBean(beanName);
+	}
+&nbsp;
+	// if (beanDefinition.isLazyInit()) {
+	// 	return this.getBeanProxy.apply(this, arguments);
+	// }
+&nbsp;
+	if (beanDefinition.isSingleton()) {
+		return this.singletonBeanFactory.getSingleton.apply(this.singletonBeanFactory, arguments);
+	} else <span class="missing-if-branch" title="else path not taken" >E</span>if (beanDefinition.isPrototype()) {
+&nbsp;
+		return this.createBean.apply(this, arguments);
+	}
+}
+&nbsp;
+/**
+ * BeanFactory do get bean proxy through BeanFactory IoC container.
+ *
+ * @param  {String} beanName
+ * @return {Object} bean proxy object
+ * @api private
+ */
+BeanFactory.prototype.doGetBeanProxy = function(beanName) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+&nbsp;
+	if (!beanDefinition) {
+		logger.error('BeanFactory beanDefinition null for %j', beanName);
+		return null;
+	}
+&nbsp;
+	var dynamicMetaProxy = new DynamicMetaProxy();
+	dynamicMetaProxy.setBeanDefinition(beanDefinition);
+	dynamicMetaProxy.setBeanFactory(this);
+	dynamicMetaProxy.setArgs(arguments);
+	dynamicMetaProxy.dyInit();
+&nbsp;
+	return dynamicMetaProxy;
+}
+&nbsp;
+/**
+ * BeanFactory do get model through BeanFactory IoC container.
+ *
+ * @param  {String} modelId
+ * @return {Object} model proxy
+ * @api private
+ */
+BeanFactory.prototype.doGetModelProxy = function(modelId) {
+	var modelDefinition = this.getModelDefinition(modelId);
+&nbsp;
+	if (!modelDefinition) {
+		logger.error('BeanFactory modelDefinition null for %j', modelId);
+		return null;
+	}
+&nbsp;
+	var beanName = modelDefinition.getId();
+	var beanDefinition = this.getBeanDefinition(beanName);
+&nbsp;
+	<span class="missing-if-branch" title="if path not taken" >I</span>if (!beanDefinition) {
+<span class="cstat-no" title="statement not covered" >		logger.error('BeanFactory beanDefinition null for %j', modelId);</span>
+<span class="cstat-no" title="statement not covered" >		return null;</span>
+	}
+&nbsp;
+	var modelFilter = new ModelFilter();
+	modelFilter.setModelDefinition(modelDefinition);
+&nbsp;
+	var modelProxy = new ModelProxy();
+	var modelBean = this.getBean(beanName);
+	var modelFields = modelDefinition.getFields();
+&nbsp;
+	for (var key in modelFields) {
+		var modelField = modelFields[key];
+		var modelDefault = modelField.getDefault();
+		var modelFieldType = modelField.getType();
+		if (Utils.isNotNull(modelDefault)) {
+			<span class="missing-if-branch" title="if path not taken" >I</span>if (modelFieldType === Constant.TYPE_NUMBER) {
+<span class="cstat-no" title="statement not covered" >				modelDefault = parseInt(modelDefault);</span>
+			}
+			modelBean[key] = modelDefault;
+		}
+	}
+&nbsp;
+	modelFilter.setModel(modelBean);
+	modelProxy['model'] = modelBean;
+	modelProxy['beanFactory'] = this;
+	modelProxy['modelFilter'] = modelFilter;
+	modelProxy['beanDefinition'] = beanDefinition;
+	modelProxy['modelDefinition'] = modelDefinition;
+&nbsp;
+	modelProxy._modelInit();
+&nbsp;
+	return modelProxy;
+}
+&nbsp;
+/**
+ * BeanFactory do get constraint through BeanFactory IoC container.
+ *
+ * @param  {String} cid
+ * @return {Object} constraint bean object
+ * @api private
+ */
+BeanFactory.prototype.doGetConstraint = function(cid) {
+	var constraintDefinition = this.getConstraintDefinition(cid);
+&nbsp;
+	if (!constraintDefinition) {
+		logger.error('BeanFactory constraintDefinition null for %j', cid);
+		return null;
+	}
+&nbsp;
+	var beanName = constraintDefinition.getId();
+	return this.getBean(beanName);
+}
+&nbsp;
+/**
+ * BeanFactory create bean instance through BeanFactory IoC container.
+ *
+ * @param  {String} beanName
+ * @return {Object} bean object
+ * @api private
+ */
+BeanFactory.prototype.createBean = function(beanName) {
+	var beanObject = this.doCreateBean.apply(this, arguments);
+	beanObject = this.initBean(beanObject, beanName, this.getInitCb(beanName));
+&nbsp;
+	return beanObject;
+}
+&nbsp;
+/**
+ * BeanFactory do create bean instance through BeanFactory IoC container.
+ *
+ * @param  {String} beanName
+ * @return {Object} bean object
+ * @api private
+ */
+BeanFactory.prototype.doCreateBean = function(beanName) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+&nbsp;
+	if (!beanDefinition) {
+		return null;
+	}
+&nbsp;
+	if (beanDefinition.hasFactoryBean()) {
+		return this.getBeanFromFactoryBean.apply(this, arguments);
+	}
+&nbsp;
+	var argsOn = beanDefinition.getArgsOn();
+	var propsOn = beanDefinition.getPropsOn();
+	var func = this.getBeanFunction(beanName);
+	if (!func) {
+		return null;
+	}
+&nbsp;
+	var dependsBeans = this.getDependsBeanValues(argsOn, arguments);
+	var dependsApplyArgs = this.getDependsApplyArgs(dependsBeans);
+&nbsp;
+	var beanObject = Object.create(func.prototype);
+&nbsp;
+	func.apply(beanObject, dependsApplyArgs);
+&nbsp;
+	dependsBeans = this.getDependsBeanValues(propsOn);
+	<span class="missing-if-branch" title="else path not taken" >E</span>if (Utils.checkArray(dependsBeans)) {
+		for (var i = 0; i &lt; dependsBeans.length; i++) {
+			var wbean = dependsBeans[i];
+			var name = wbean.getName();
+			if (wbean.getDependType() === Constant.DEPEND_TYPE_BEAN) {
+				beanObject[name] = wbean.getBean();
+			} else if (wbean.getDependType() === Constant.DEPEND_TYPE_VALUE) {
+				beanObject[name] = wbean.getValue();
+			}
+			// no this case
+			// else if (wbean.getDependType() === Constant.DEPEND_TYPE_VAR) {
+			// beanObject[name] = wbean.getValueOnce();
+			// } 
+			else {
+				// Constant.DEPEND_TYPE_ERROR
+			}
+		}
+	}
+&nbsp;
+	return beanObject;
+}
+&nbsp;
+/**
+ * BeanFactory init bean with init method.
+ *
+ * @param  {Object}   beanObject
+ * @param  {String}   beanName
+ * @param  {Function} cb async init callback function
+ * @api private
+ */
+BeanFactory.prototype.initBean = function(beanObject, beanName, cb) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+	if (!beanDefinition) {
+		return;
+	}
+&nbsp;
+	beanObject = this.applyBeanPostProcessorsBeforeInitialization(beanObject, beanName);
+&nbsp;
+	this.invokeInitMethods(beanObject, beanName, cb);
+&nbsp;
+	beanObject = this.applyBeanPostProcessorsAfterInitialization(beanObject, beanName);
+&nbsp;
+	return beanObject;
+}
+&nbsp;
+/**
+ * BeanFactory invoke init method.
+ *
+ * @param  {Object}   beanObject
+ * @param  {String}   beanName
+ * @param  {Function} cb async init callback function
+ * @api private
+ */
+BeanFactory.prototype.invokeInitMethods = function(beanObject, beanName, cb) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+	if (!beanDefinition) {
+		return;
+	}
+&nbsp;
+	if (beanDefinition.hasInitMethod()) {
+		var initMethodName = beanDefinition.getInitMethodName();
+&nbsp;
+		// run init method
+		var initMethod = beanObject[initMethodName];
+		<span class="missing-if-branch" title="else path not taken" >E</span>if (Utils.checkFunction(initMethod)) {
+			initMethod.call(beanObject, cb);
+		}
+	}
+}
+&nbsp;
+/**
+ * BeanFactory get bean instance from factoryBean's factory method.
+ *
+ * @param  {String} beanName
+ * @return {Object} bean object
+ * @api private
+ */
+BeanFactory.prototype.getBeanFromFactoryBean = function(beanName) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+&nbsp;
+	var factoryBeanName = beanDefinition.getFactoryBeanName();
+	var factoryMethodName = beanDefinition.getFactoryMethodName();
+	var factoryArgsOn = beanDefinition.getFactoryArgsOn();
+&nbsp;
+	var factoryBean = this.getBean(factoryBeanName);
+&nbsp;
+	if (!factoryBean) {
+		return null;
+	}
+&nbsp;
+	var factoryMethod = factoryBean[factoryMethodName];
+&nbsp;
+	var dependsBeans = this.getDependsBeanValues(factoryArgsOn, arguments);
+&nbsp;
+	var dependsApplyArgs = this.getDependsApplyArgs(dependsBeans);
+&nbsp;
+	var beanObject = factoryMethod.apply(factoryBean, dependsApplyArgs);
+&nbsp;
+	return beanObject;
+}
+&nbsp;
+/**
+ * BeanFactory get denpended beans or values.
+ *
+ * @param  {Array} dependsOn
+ * @param  {Array} args arguments
+ * @return {Array} depended bean value list
+ * @api private
+ */
+BeanFactory.prototype.getDependsBeanValues = function(dependsOn, args) {
+	var r = [];
+	if (!Utils.checkArray(dependsOn)) {
+		return r;
+	}
+&nbsp;
+	var s = 1;
+	for (var i = 0; i &lt; dependsOn.length; i++) {
+		var wbean = dependsOn[i];
+		var beanName = wbean.getRef();
+&nbsp;
+		if (wbean.getDependType() === Constant.DEPEND_TYPE_BEAN) {
+			var bean = this.getBean(beanName);
+			if (bean) {
+				wbean.setBean(bean);
+			}
+		}
+&nbsp;
+		if (wbean.getDependType() === Constant.DEPEND_TYPE_VAR) {
+			var value = args[s++];
+			wbean.setValue(value);
+		}
+&nbsp;
+		r.push(wbean);
+	}
+&nbsp;
+	return r;
+}
+&nbsp;
+/**
+ * BeanFactory get depended apply arguments.
+ *
+ * @param  {Array} dependsOn
+ * @return {Array} depended bean apply list
+ * @api private
+ */
+BeanFactory.prototype.getDependsApplyArgs = function(dependsOn) {
+	var r = [];
+&nbsp;
+	if (!Utils.checkArray(dependsOn)) {
+		return r;
+	}
+&nbsp;
+	for (var i = 0; i &lt; dependsOn.length; i++) {
+		var wbean = dependsOn[i];
+		if (wbean.getDependType() === Constant.DEPEND_TYPE_BEAN) {
+			r.push(wbean.getBean());
+		} else if (wbean.getDependType() === Constant.DEPEND_TYPE_VALUE) {
+			r.push(wbean.getValue());
+		} else if (wbean.getDependType() === Constant.DEPEND_TYPE_VAR) {
+			r.push(wbean.getValueOnce());
+		} else {
+			// DEPEND_TYPE_ERROR
+			logger.error("getDependsApplyArgs depends args type error %j", wbean);
+		}
+	}
+&nbsp;
+	return r;
+}
+&nbsp;
+/**
+ * BeanFactory set parent bean.
+ *
+ * @param  {String} beanName
+ * @return {Object} beanDefinition
+ * @api public
+ */
+BeanFactory.prototype.setParentBean = function(beanName) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+	if (!beanDefinition) {
+		return null;
+	}
+&nbsp;
+	var parentName = beanDefinition.getParentName();
+	var parentBeanDefintion = this.getBeanDefinition(parentName);
+&nbsp;
+	var func = this.getBeanFunction(beanName);
+&nbsp;
+	var parentFunc = this.getBeanFunction(parentName);
+&nbsp;
+	<span class="missing-if-branch" title="else path not taken" >E</span>if (parentFunc) {
+		var proto = parentFunc.prototype;
+		for (var key in proto) {
+			if (!func.prototype[key]) {
+				func.prototype[key] = proto[key];
+			}
+		}
+	}
+&nbsp;
+	<span class="missing-if-branch" title="else path not taken" >E</span>if (parentBeanDefintion) {
+		beanDefinition.setParentBean(parentBeanDefintion);
+		beanDefinition.setArgsOn(parentBeanDefintion.getArgs());
+		beanDefinition.setPropsOn(parentBeanDefintion.getProps());
+		beanDefinition.setFactoryArgsOn(parentBeanDefintion.getFactoryArgs());
+	}
+&nbsp;
+	return beanDefinition;
+}
+&nbsp;
+/**
+ * BeanFactory register beans through metaObjects into BeanFactory.
+ *
+ * @param  {Object} metaObjects
+ * @api public
+ */
+BeanFactory.prototype.registerBeans = function(metaObjects) {
+	for (var beanName in metaObjects) {
+		this.registerBean(beanName, metaObjects[beanName]);
+	}
+}
+&nbsp;
+/**
+ * BeanFactory register bean through metaObject into BeanFactory.
+ *
+ * @param  {String} beanName
+ * @param  {Object} metaObjects
+ * @api public
+ */
+BeanFactory.prototype.registerBean = function(beanName, metaObject) {
+	var func = metaObject.func;
+&nbsp;
+	var validateResult = ValidatorUtil.metaValidator(metaObject);
+	if (validateResult !== true) {
+		logger.error("registryBean %j metaObject %j validate error %s", beanName, metaObject, validateResult.stack);
+		return;
+	}
+&nbsp;
+	var mid = metaObject.mid;
+	if (mid) {
+		// register bearcat model
+		this.registerModel(beanName, mid, metaObject);
+	}
+&nbsp;
+	var cid = metaObject.cid;
+	if (cid) {
+		// register bearcat constraint
+		this.registerConstraint(beanName, cid, metaObject);
+	}
+&nbsp;
+	if (func &amp;&amp; Utils.checkFunction(func) &amp;&amp; !this.getBeanFunction(beanName)) {
+		this.setBeanFunction(beanName, func);
+	}
+&nbsp;
+	var order = metaObject.order;
+	var parentName = metaObject.parent;
+	var initMethodName = metaObject.init;
+	var destroyMethodName = metaObject.destroy;
+	var factoryBeanName = metaObject.factoryBean;
+	var factoryMethodName = metaObject.factoryMethod;
+	var scope = metaObject.scope || Constant.SCOPE_DEFAULT;
+	var args = metaObject.args || Constant.ARGS_DEFAULT;
+	var props = metaObject.props || Constant.PROPS_DEFAULT;
+	var factoryArgsOn = metaObject.factoryArgs || Constant.ARGS_DEFAULT;
+	var asyncInit = metaObject.async || Constant.ASYNC_INIT_DEFAULT;
+	var lazyInit = metaObject.lazy || Constant.LAZY_INIT_DEFAULT;
+	var abstract = metaObject.abstract || Constant.ABSTRACT_DEFAULT;
+	var proxy = metaObject.proxy;
+	if (!Utils.isNotNull(proxy)) {
+		proxy = Constant.PROXY_DEFAULT;
+	}
+&nbsp;
+	var aop = metaObject.aop;
+&nbsp;
+	var beanDefinition = null;
+	beanDefinition = this.getBeanDefinition(beanName);
+	if (!beanDefinition) {
+		beanDefinition = new BeanDefinition();
+	}
+&nbsp;
+	// model scope should be prototype
+	if (mid) {
+		scope = Constant.SCOPE_PROTOTYPE;
+	}
+&nbsp;
+	beanDefinition.setFunc(func);
+	beanDefinition.setOrder(order);
+	beanDefinition.setScope(scope);
+	beanDefinition.setProxy(proxy);
+	beanDefinition.setBeanName(beanName);
+	beanDefinition.setLazyInit(lazyInit);
+	beanDefinition.setAbstract(abstract);
+	beanDefinition.setAsyncInit(asyncInit);
+	beanDefinition.setParentName(parentName);
+	beanDefinition.setInitMethodName(initMethodName);
+	beanDefinition.setFactoryBeanName(factoryBeanName);
+	beanDefinition.setFactoryMethodName(factoryMethodName);
+	beanDefinition.setDestroyMethodName(destroyMethodName);
+	beanDefinition.setArgsOn(BeanUtil.buildBeanWrapper(args));
+	beanDefinition.setPropsOn(BeanUtil.buildBeanWrapper(props));
+	beanDefinition.setFactoryArgsOn(BeanUtil.buildBeanWrapper(factoryArgsOn));
+&nbsp;
+	if (aop &amp;&amp; Utils.checkArray(aop)) {
+		var aspect = AopUtil.buildAspect(aop, beanDefinition);
+		this.aspects.push(aspect);
+		beanDefinition.setAspect(true);
+	}
+&nbsp;
+	this.beanDefinitions[beanName] = beanDefinition;
+}
+&nbsp;
+/**
+ * BeanFactory register model through metaObject into BeanFactory.
+ *
+ * @param  {String} beanName bean id
+ * @param  {String} modelId  model id
+ * @param  {Object} metaObject
+ * @api public
+ */
+BeanFactory.prototype.registerModel = function(beanName, modelId, metaObject) {
+	var modelDefinition = null;
+	modelDefinition = this.getModelDefinition(modelId);
+	<span class="missing-if-branch" title="else path not taken" >E</span>if (!modelDefinition) {
+		modelDefinition = new ModelDefinition();
+	}
+&nbsp;
+	var table = metaObject.table;
+	var prefix = metaObject.prefix;
+	var attributes = metaObject.attributes;
+&nbsp;
+	var resolvedAttributes = ModelUtil.buildModelAttribute(attributes, this);
+&nbsp;
+	modelDefinition.setId(beanName);
+	modelDefinition.setMid(modelId);
+	modelDefinition.setTable(table);
+	modelDefinition.setPrefix(prefix);
+	modelDefinition.setFields(resolvedAttributes['fields']);
+	modelDefinition.setBalance(resolvedAttributes['balance']);
+	modelDefinition.setRefFields(resolvedAttributes['refFields']);
+	modelDefinition.setOneToMany(resolvedAttributes['oneToMany']);
+&nbsp;
+	if (Utils.isNotNull(table)) {
+		this.setTableModelMap(table, modelDefinition);
+	}
+&nbsp;
+	this.modelMap[modelId] = modelDefinition;
+}
+&nbsp;
+/**
+ * BeanFactory register constraint through metaObject into BeanFactory.
+ *
+ * @param  {String} beanName bean id
+ * @param  {String} cid      constraint id
+ * @param  {Object} metaObject
+ * @api public
+ */
+BeanFactory.prototype.registerConstraint = function(beanName, cid, metaObject) {
+	var constraintDefinition = null;
+	constraintDefinition = this.getConstraintDefinition(cid);
+	if (!constraintDefinition) {
+		constraintDefinition = new ModelConstraint();
+	}
+&nbsp;
+	var message = metaObject.message;
+	var constraint = metaObject.constraint;
+&nbsp;
+	constraintDefinition.setId(beanName);
+	constraintDefinition.setCid(cid);
+	constraintDefinition.setConstraint(constraint);
+&nbsp;
+	this.constraints[cid] = constraintDefinition;
+}
+&nbsp;
+/**
+ * BeanFactory instantiating singletion beans in advance.
+ *
+ * @param  {Function} cb callback function
+ * @api public
+ */
+BeanFactory.prototype.preInstantiateSingletons = function(cb) {
+	var beanDefinitionOrderList = BeanUtil.sortBeanDefinitions(this.beanDefinitions, this);
+	var self = this;
+&nbsp;
+	var index = 0;
+	var next = function(err) {
+		if (err || index &gt;= beanDefinitionOrderList.length) {
+			return cb(err);
+		}
+&nbsp;
+		var beanDefinition = beanDefinitionOrderList[index++];
+		var beanName = beanDefinition.getBeanName();
+&nbsp;
+		if (beanDefinition.isAsyncInit()) {
+			if (!self.singletonBeanFactory.containsSingleton(beanName)) {
+				var initCb = function() {
+					next();
+				}
+				self.setInitCb(beanName, initCb);
+				self.getBean(beanName);
+			} else {
+				self.getBean(beanName);
+				next()
+			}
+		} else {
+			var initCb = function() {}
+			self.setInitCb(beanName, initCb);
+			self.getBean(beanName);
+			next();
+		}
+	}
+&nbsp;
+	next();
+}
+&nbsp;
+/**
+ * BeanFactory add beanPostProcessor to BeanFactory.
+ * @param  {Object} beanPostProcessor
+ * @api public
+ */
+BeanFactory.prototype.addBeanPostProcessor = function(beanPostProcessor) {
+	this.beanPostProcessors.push(beanPostProcessor);
+}
+&nbsp;
+/**
+ * BeanFactory get beanPostProcessors.
+ * @return {Object} beanPostProcessors
+ * @api public
+ */
+BeanFactory.prototype.getBeanPostProcessors = function() {
+	return this.beanPostProcessors;
+}
+&nbsp;
+/**
+ * BeanFactory apply beanPostBeforeProcessors.
+ * @param  {Object} beanObject
+ * @param  {String} beanName
+ * @return {Object} beanObject
+ * @api private
+ */
+BeanFactory.prototype.applyBeanPostProcessorsBeforeInitialization = function(beanObject, beanName) {
+	var result = beanObject;
+&nbsp;
+	var beanPostProcessors = this.getBeanPostProcessors();
+	for (var i = 0; i &lt; beanPostProcessors.length; i++) {
+		var beanProcessor = beanPostProcessors[i];
+		result = beanProcessor.before(result, beanName);
+		if (!result) {
+			return result;
+		}
+	}
+&nbsp;
+	return result;
+}
+&nbsp;
+/**
+ * BeanFactory apply beanPostAfterProcessors.
+ * @param  {Object} beanObject
+ * @param  {String} beanName
+ * @return {Object} beanObject
+ * @api private
+ */
+BeanFactory.prototype.applyBeanPostProcessorsAfterInitialization = function(beanObject, beanName) {
+	var result = beanObject;
+&nbsp;
+	var beanPostProcessors = this.getBeanPostProcessors();
+	for (var i = 0; i &lt; beanPostProcessors.length; i++) {
+		var beanProcessor = beanPostProcessors[i];
+		result = beanProcessor.after(result, beanName);
+		if (!result) {
+			return result;
+		}
+	}
+&nbsp;
+	return result;
+}
+&nbsp;
+/**
+ * BeanFactory destroy singletons.
+ *
+ * @api public
+ */
+BeanFactory.prototype.destroySingletons = function() {
+	var singletonNames = this.singletonBeanFactory.getSingletonNames();
+&nbsp;
+	for (var i = 0; i &lt; singletonNames.length; i++) {
+		this.destroySingleton(singletonNames[i]);
+	}
+}
+&nbsp;
+/**
+ * BeanFactory destroy BeanFactory.
+ *
+ * @api public
+ */
+BeanFactory.prototype.destroyBeanFactory = function() {
+	this.initCbMap = null;
+	this.beanCurMap = null;
+	this.beanFunctions = null;
+	this.beanDefinitions = null;
+	this.singletonBeanFactory = null;
+}
+&nbsp;
+/**
+ * BeanFactory destroy singleton.
+ *
+ * @param  {String} beanName
+ * @api public
+ */
+BeanFactory.prototype.destroySingleton = function(beanName) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+	if (!beanDefinition) {
+		return;
+	}
+&nbsp;
+	var beanObject = this.getBean(beanName);
+&nbsp;
+	this.destroyBean(beanName, beanObject);
+&nbsp;
+	this.singletonBeanFactory.removeSingleton(beanName);
+}
+&nbsp;
+/**
+ * BeanFactory destroy bean.
+ *
+ * @param  {String} beanName
+ * @param  {Object} beanObject
+ * @api public
+ */
+BeanFactory.prototype.destroyBean = function(beanName, beanObject) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+	if (!beanDefinition) {
+		return;
+	}
+&nbsp;
+	var destroyMethodName = beanDefinition.getDestroyMethodName();
+&nbsp;
+	var destroyMethod = beanObject[destroyMethodName];
+	if (Utils.checkFunction(destroyMethod)) {
+		destroyMethod.call(beanObject);
+	}
+&nbsp;
+	this.removeFunction(beanName);
+	this.removeBeanDefinition(beanName);
+}
+&nbsp;
+/**
+ * BeanFactory check bean is a singleton or not.
+ *
+ * @param  {String} beanName
+ * @return {Boolean}
+ * @api public
+ */
+BeanFactory.prototype.isSingleton = function(beanName) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+	if (beanDefinition) {
+		return beanDefinition.isSingleton();
+	} else {
+		return false;
+	}
+}
+&nbsp;
+/**
+ * BeanFactory check bean is a prototype or not.
+ *
+ * @param  {String} beanName
+ * @return {Boolean}
+ * @api public
+ */
+BeanFactory.prototype.isPrototype = function(beanName) {
+	var beanDefinition = this.getBeanDefinition(beanName);
+	if (beanDefinition) {
+		return beanDefinition.isPrototype();
+	} else {
+		return false;
+	}
+}
+&nbsp;
+/**
+ * BeanFactory check BeanFactory contains bean or not.
+ *
+ * @param  {String} beanName
+ * @return {Boolean}
+ * @api public
+ */
+BeanFactory.prototype.containsBean = function(beanName) {
+	return !!this.getBeanFunction(beanName) &amp;&amp; !!this.getBeanDefinition(beanName);
+}
+&nbsp;
+/**
+ * BeanFactory get bean contructor function.
+ *
+ * @param  {String} beanName
+ * @return {Function} bean constructor function
+ * @api public
+ */
+BeanFactory.prototype.getBeanFunction = function(beanName) {
+	return this.beanFunctions[beanName];
+}
+&nbsp;
+/**
+ * BeanFactory set bean contructor function.
+ *
+ * @param  {String}   beanName
+ * @param  {Function} func bean constructor function
+ * @api public
+ */
+BeanFactory.prototype.setBeanFunction = function(beanName, func) {
+	this.beanFunctions[beanName] = func;
+}
+&nbsp;
+/**
+ * BeanFactory remove bean contructor function from BeanFactory.
+ *
+ * @param  {String} beanName
+ * @api public
+ */
+BeanFactory.prototype.removeFunction = function(beanName) {
+	delete this.beanFunctions[beanName];
+}
+&nbsp;
+/**
+ * BeanFactory get init method.
+ *
+ * @param  {String}   beanName
+ * @return {Function} bean init method
+ * @api public
+ */
+BeanFactory.prototype.getInitCb = function(beanName) {
+	if (!this.initCbMap[beanName]) {
+		this.initCbMap[beanName] = Constant.INIT_CB_DEFAULT;
+	}
+&nbsp;
+	return this.initCbMap[beanName];
+}
+&nbsp;
+/**
+ * BeanFactory set init method.
+ *
+ * @param  {String}   beanName
+ * @param  {Function} initCb bean init method
+ * @api public
+ */
+BeanFactory.prototype.setInitCb = function(beanName, initCb) {
+	this.initCbMap[beanName] = initCb;
+}
+&nbsp;
+/**
+ * BeanFactory get beanDefinition.
+ *
+ * @param  {String} beanName
+ * @return {Object} beanDefinition
+ * @api public
+ */
+BeanFactory.prototype.getBeanDefinition = function(beanName) {
+	return this.beanDefinitions[beanName];
+}
+&nbsp;
+/**
+ * BeanFactory get beanDefinitions.
+ *
+ * @return {Object} beanDefinitions
+ * @api public
+ */
+BeanFactory.prototype.getBeanDefinitions = function() {
+	return this.beanDefinitions;
+}
+&nbsp;
+/**
+ * BeanFactory remove beanDefinition from BeanFactory.
+ *
+ * @param  {String} beanName
+ * @api public
+ */
+BeanFactory.prototype.removeBeanDefinition = function(beanName) {
+	delete this.beanDefinitions[beanName];
+}
+&nbsp;
+/**
+ * BeanFactory check BeanFactory contains beanName beanDefinition or not.
+ *
+ * @param  {String} beanName
+ * @return {Boolean}
+ * @api public
+ */
+BeanFactory.prototype.containsBeanDefinition = function(beanName) {
+	return !!this.getBeanDefinition(beanName);
+}
+&nbsp;
+/**
+ * BeanFactory get aspects.
+ *
+ * @return {Array} aspects
+ * @api public
+ */
+BeanFactory.prototype.getAspects = function() {
+	return this.aspects;
+}
+&nbsp;
+/**
+ * BeanFactory get modelDefinition.
+ *
+ * @param  {String} modelId
+ * @return {Object} modelDefinition
+ * @api public
+ */
+BeanFactory.prototype.getModelDefinition = function(modelId) {
+	return this.modelMap[modelId];
+}
+&nbsp;
+/**
+ * BeanFactory get modelDefinitions.
+ *
+ * @return {Object} modelDefinition map
+ * @api public
+ */
+BeanFactory.prototype.getModelDefinitions = function() {
+	return this.modelMap;
+}
+&nbsp;
+/**
+ * BeanFactory get getConstraintDefinition.
+ *
+ * @param  {String} cid
+ * @return {Object} getConstraintDefinition
+ * @api public
+ */
+BeanFactory.prototype.getConstraintDefinition = function(cid) {
+	return this.constraints[cid];
+}
+&nbsp;
+/**
+ * BeanFactory set table model map.
+ *
+ * @param  {String} table name
+ * @param  {Object} modelDefinition
+ * @api public
+ */
+BeanFactory.prototype.setTableModelMap = function(table, modelDefinition) {
+	this.tableModelMap[table] = modelDefinition;
+}
+&nbsp;
+/**
+ * BeanFactory get modelDefinition by table.
+ *
+ * @param   {String} table name
+ * @return  {Object} modelDefinition
+ * @api public
+ */
+BeanFactory.prototype.getModelDefinitionByTable = <span class="fstat-no" title="function not covered" >function(table) {</span>
+<span class="cstat-no" title="statement not covered" >	return this.tableModelMap[table];</span>
+}
+&nbsp;
+module.exports = BeanFactory;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Feb 28 2018 11:51:32 GMT+0800 (CST)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

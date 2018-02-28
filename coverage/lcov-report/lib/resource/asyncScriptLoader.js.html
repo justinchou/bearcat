@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for lib/resource/asyncScriptLoader.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">lib/resource/</a> asyncScriptLoader.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">29.85% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>20/67</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/26</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">8.33% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/12</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">29.85% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>20/67</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span></td><td class="text"><pre class="prettyprint lang-js">/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  &lt;  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat AsyncScriptLoader
+ * Copyright(c) 2015 fantasyni &lt;fantasyni@163.com&gt;
+ * MIT Licensed
+ */
+&nbsp;
+var logger = require('pomelo-logger').getLogger('bearcat', 'AsyncScriptLoader');
+var BeanModule = require('../beans/support/beanModule');
+var Path = require('../util/requireUtil').requirePath();
+var ScriptUtil = require('../util/scriptUtil');
+var Utils = require('../util/utils');
+var cid = 1;
+&nbsp;
+var Root;
+(function() {
+	Root = this;
+}());
+&nbsp;
+/**
+ * AsyncScriptLoader constructor function.
+ *
+ * @api public
+ */
+var AsyncScriptLoader = <span class="fstat-no" title="function not covered" >function() {</span>
+<span class="cstat-no" title="statement not covered" >	this.cacheModules = {};</span>
+<span class="cstat-no" title="statement not covered" >	this.loaderDir = null;</span>
+<span class="cstat-no" title="statement not covered" >	this.applicationContext = null;</span>
+}
+&nbsp;
+/**
+ * AsyncScriptLoader get loaded beans list.
+ *
+ * @return  {Array}  loaded beans
+ * @api public
+ */
+AsyncScriptLoader.prototype.getLoadBeans = <span class="fstat-no" title="function not covered" >function() {</span>
+<span class="cstat-no" title="statement not covered" >	return this.loadBeans;</span>
+}
+&nbsp;
+/**
+ * AsyncScriptLoader load beans asynchronously.
+ *
+ * @param  {Array}     loaded beans ids
+ * @param  {Function}  callback function
+ * @api public
+ */
+AsyncScriptLoader.prototype.load = <span class="fstat-no" title="function not covered" >function(ids, cb) {</span>
+<span class="cstat-no" title="statement not covered" >	this.loaderDir = ScriptUtil.getLoaderDir();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	var uri = this.loaderDir + '_load_' + cid++;</span>
+<span class="cstat-no" title="statement not covered" >	var mod = this.get(uri, ids);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	mod.addEntry(mod);</span>
+<span class="cstat-no" title="statement not covered" >	mod.setRemain(1);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	mod.callback = <span class="fstat-no" title="function not covered" >function() {</span></span>
+<span class="cstat-no" title="statement not covered" >		if (Utils.checkFunction(cb)) {</span>
+<span class="cstat-no" title="statement not covered" >			cb();</span>
+		}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		delete mod.callback</span>
+<span class="cstat-no" title="statement not covered" >		delete mod.history</span>
+<span class="cstat-no" title="statement not covered" >		delete mod.remain</span>
+<span class="cstat-no" title="statement not covered" >		delete mod.entries;</span>
+	}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	mod.load();</span>
+}
+&nbsp;
+/**
+ * AsyncScriptLoader save load script with uri meta.
+ *
+ * @param  {String}  uri
+ * @param  {Object}  bean meta
+ * @api public
+ */
+AsyncScriptLoader.prototype.save = <span class="fstat-no" title="function not covered" >function(uri, meta) {</span>
+<span class="cstat-no" title="statement not covered" >	var mod = this.get(uri)</span>
+&nbsp;
+	// Do NOT override already saved modules
+<span class="cstat-no" title="statement not covered" >	if (mod.status &lt; BeanModule.STATUS.SAVED) {</span>
+<span class="cstat-no" title="statement not covered" >		mod.id = meta.id || uri</span>
+<span class="cstat-no" title="statement not covered" >		mod.dependencies = meta.deps || []</span>
+<span class="cstat-no" title="statement not covered" >		mod.factory = meta.factory</span>
+<span class="cstat-no" title="statement not covered" >		mod.status = BeanModule.STATUS.SAVED</span>
+	}
+}
+&nbsp;
+/**
+ * AsyncScriptLoader register script with id, meta.
+ *
+ * @param  {String}  id
+ * @param  {Object}  bean meta
+ * @api public
+ */
+AsyncScriptLoader.prototype.module = <span class="fstat-no" title="function not covered" >function(id, beanMeta) {</span>
+<span class="cstat-no" title="statement not covered" >	var deps = this.resolveDeps(beanMeta);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	var meta = {</span>
+		id: id,
+		uri: this.resolve(id),
+		deps: deps
+	};
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	meta.uri ? this.save(meta.uri, meta) :</span>
+		// Save information for "saving" work in the script onload event
+		BeanModule.anonymousMeta = meta;
+}
+&nbsp;
+/**
+ * AsyncScriptLoader resolve uri path with refUri.
+ *
+ * @param  {String}  id
+ * @param  {String}  refUri
+ * @return {String}  resolved path
+ * @api public
+ */
+AsyncScriptLoader.prototype.resolve = <span class="fstat-no" title="function not covered" >function(id, refUri) {</span>
+	// id path map
+<span class="cstat-no" title="statement not covered" >	var path = this.getPathById(id);</span>
+<span class="cstat-no" title="statement not covered" >	if (!path) {</span>
+<span class="cstat-no" title="statement not covered" >		path = id;</span>
+<span class="cstat-no" title="statement not covered" >		logger.warn('id: ' + id + ' can not be resolved, try run bearcat generate or use bearcat.module to register it');</span>
+	}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	return path;</span>
+}
+&nbsp;
+/**
+ * AsyncScriptLoader resolve deps through bean meta.
+ *
+ * @param  {Object}  bean meta
+ * @param  {Array}   resolved deps
+ * @api public
+ */
+AsyncScriptLoader.prototype.resolveDeps = <span class="fstat-no" title="function not covered" >function(beanMeta) {</span>
+<span class="cstat-no" title="statement not covered" >	var propsOn = beanMeta.props;</span>
+<span class="cstat-no" title="statement not covered" >	if (!Utils.isNotNull(propsOn) || !propsOn) {</span>
+<span class="cstat-no" title="statement not covered" >		return;</span>
+	}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	var deps = [];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	for (var i = 0; i &lt; propsOn.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >		var prop = propsOn[i];</span>
+<span class="cstat-no" title="statement not covered" >		var ref = prop['ref'];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		if (ref) {</span>
+			// do not load already registered beans
+<span class="cstat-no" title="statement not covered" >			if (this.applicationContext.getBeanDefinition(ref)) {</span>
+<span class="cstat-no" title="statement not covered" >				continue;</span>
+			}
+<span class="cstat-no" title="statement not covered" >			deps.push(ref);</span>
+		}
+	}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	return deps;</span>
+}
+&nbsp;
+/**
+ * AsyncScriptLoader get bean path through bean id.
+ *
+ * @param  {String}  id
+ * @return {String}  bean path
+ * @api public
+ */
+AsyncScriptLoader.prototype.getPathById = <span class="fstat-no" title="function not covered" >function(id) {</span>
+<span class="cstat-no" title="statement not covered" >	if (Root.__bearcatData__ &amp;&amp; Root.__bearcatData__.idPaths) {</span>
+<span class="cstat-no" title="statement not covered" >		return Root.__bearcatData__.idPaths[id];</span>
+	}
+}
+&nbsp;
+/**
+ * AsyncScriptLoader get script from cache or new.
+ *
+ * @param  {String}  uri
+ * @param  {Array}   deps id
+ * @return {Object}  module
+ * @api public
+ */
+AsyncScriptLoader.prototype.get = <span class="fstat-no" title="function not covered" >function(uri, deps) {</span>
+<span class="cstat-no" title="statement not covered" >	return this.cacheModules[uri] || (this.cacheModules[uri] = new BeanModule(uri, deps, this));</span>
+}
+&nbsp;
+/**
+ * AsyncScriptLoader set applicationContext reference.
+ *
+ * @param  {Object}  applicationContext
+ * @api public
+ */
+AsyncScriptLoader.prototype.setApplicationContext = <span class="fstat-no" title="function not covered" >function(applicationContext) {</span>
+<span class="cstat-no" title="statement not covered" >	this.applicationContext = applicationContext;</span>
+}
+&nbsp;
+module.exports = AsyncScriptLoader;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Feb 28 2018 11:51:32 GMT+0800 (CST)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

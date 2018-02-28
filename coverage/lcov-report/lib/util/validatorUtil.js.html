@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for lib/util/validatorUtil.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">lib/util/</a> validatorUtil.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>56/56</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>76/76</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/1</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>56/56</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">554×</span>
+<span class="cline-any cline-yes">554×</span>
+<span class="cline-any cline-yes">554×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">554×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">553×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">552×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">551×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">550×</span>
+<span class="cline-any cline-yes">550×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">548×</span>
+<span class="cline-any cline-yes">548×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">547×</span>
+<span class="cline-any cline-yes">547×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">546×</span>
+<span class="cline-any cline-yes">546×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">545×</span>
+<span class="cline-any cline-yes">545×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">544×</span>
+<span class="cline-any cline-yes">544×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">543×</span>
+<span class="cline-any cline-yes">543×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">542×</span>
+<span class="cline-any cline-yes">542×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">541×</span>
+<span class="cline-any cline-yes">541×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">540×</span>
+<span class="cline-any cline-yes">540×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">539×</span>
+<span class="cline-any cline-yes">539×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">538×</span>
+<span class="cline-any cline-yes">538×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">537×</span>
+<span class="cline-any cline-yes">537×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">536×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span></td><td class="text"><pre class="prettyprint lang-js">/*!
+ * .______    _______     ___      .______       ______     ___   .__________.
+ * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
+ * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
+ * |   _  &lt;  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
+ * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
+ * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
+ *
+ * Bearcat ValidatorUtil
+ * Copyright(c) 2015 fantasyni &lt;fantasyni@163.com&gt;
+ * MIT Licensed
+ */
+&nbsp;
+var Constant = require('./constant');
+var Utils = require('./utils');
+var ValidatorUtil = {};
+&nbsp;
+/**
+ * ValidatorUtil validate metaObject.
+ *
+ * @param    {Object}   	   metaObject
+ * @return   {Boolean|Error}  true|error object
+ * @api public
+ */
+ValidatorUtil.metaValidator = function(metaObject) {
+	var id = metaObject.id;
+	var mid = metaObject.mid;
+	var cid = metaObject.cid;
+&nbsp;
+	if (!id &amp;&amp; !mid &amp;&amp; !cid)
+		return new Error('one of id, mid, cid must be exist');
+&nbsp;
+	if (Utils.isNotNull(id) &amp;&amp; !Utils.checkString(id))
+		return new Error('id must be String');
+&nbsp;
+	if (Utils.isNotNull(mid) &amp;&amp; !Utils.checkString(mid))
+		return new Error('mid must be String');
+&nbsp;
+	if (Utils.isNotNull(cid) &amp;&amp; !Utils.checkString(cid))
+		return new Error('cid must be String');
+&nbsp;
+	var func = metaObject.func;
+	if (!Utils.isNotNull(func) || !Utils.checkFunction(func))
+		return new Error('func must be Function');
+&nbsp;
+	var table = metaObject.table;
+	if (Utils.isNotNull(table) &amp;&amp; !Utils.checkString(table)) {
+		return new Error('table must be String');
+	}
+&nbsp;
+	var message = metaObject.message;
+	if (Utils.isNotNull(message) &amp;&amp; !Utils.checkString(message)) {
+		return new Error('message must be String');
+	}
+&nbsp;
+	var constraint = metaObject.constraint;
+	if (Utils.isNotNull(constraint) &amp;&amp; !Utils.checkString(constraint)) {
+		return new Error('constraint must be String');
+	}
+&nbsp;
+	var order = metaObject.order;
+	if (Utils.isNotNull(order) &amp;&amp; !Utils.checkNumber(order))
+		return new Error('order must be Number');
+&nbsp;
+	var parentName = metaObject.parent;
+	if (Utils.isNotNull(parentName) &amp;&amp; !Utils.checkString(parentName))
+		return new Error('parent must be String');
+&nbsp;
+	var initMethodName = metaObject.init;
+	if (Utils.isNotNull(initMethodName) &amp;&amp; !Utils.checkString(initMethodName))
+		return new Error('init must be String');
+&nbsp;
+	var destroyMethodName = metaObject.destroy;
+	if (Utils.isNotNull(destroyMethodName) &amp;&amp; !Utils.checkString(destroyMethodName))
+		return new Error('destroy must be String');
+&nbsp;
+	var factoryBeanName = metaObject.factoryBean;
+	if (Utils.isNotNull(factoryBeanName) &amp;&amp; !Utils.checkString(factoryBeanName))
+		return new Error('factoryBean must be String');
+&nbsp;
+	var factoryMethodName = metaObject.factoryMethod;
+	if (Utils.isNotNull(factoryMethodName) &amp;&amp; !Utils.checkString(factoryMethodName))
+		return new Error('factoryMethodName must be String');
+&nbsp;
+	var scope = metaObject.scope || Constant.SCOPE_DEFAULT;
+	if (scope &amp;&amp; scope !== Constant.SCOPE_SINGLETON &amp;&amp; scope !== Constant.SCOPE_PROTOTYPE)
+		return new Error('scope must be singleton or prototype');
+&nbsp;
+	var asyncInit = metaObject.async || Constant.ASYNC_INIT_DEFAULT;
+	if (Utils.isNotNull(asyncInit) &amp;&amp; !Utils.checkBoolean(asyncInit))
+		return new Error('async must be Boolean');
+&nbsp;
+	var lazyInit = metaObject.lazy || Constant.LAZY_INIT_DEFAULT;
+	if (Utils.isNotNull(lazyInit) &amp;&amp; !Utils.checkBoolean(lazyInit))
+		return new Error('lazy must be Boolean');
+&nbsp;
+	return true;
+}
+&nbsp;
+module.exports = ValidatorUtil;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Feb 28 2018 11:51:32 GMT+0800 (CST)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>
