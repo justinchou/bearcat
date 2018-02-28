@@ -5448,7 +5448,7 @@ ApplicationContext.prototype.meta = function (meta, context) {
 
     // node.js env
     if (!Utils.checkBrowser() && Utils.isNotNull(context) && context['exports']) {
-        return context['exports'] = meta['func'];
+        return context['exports'] = meta;
     }
 
     // browser async load depended script files
@@ -11409,7 +11409,7 @@ function hasOwnProperty(obj, prop) {
 },{"./support/isBuffer":51,"_process":49,"inherits":50}],53:[function(require,module,exports){
 module.exports={
   "name": "bearcatjs",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Magic, self-described javaScript objects build up elastic, maintainable front-backend javaScript applications",
   "main": "index.js",
   "scripts": {
