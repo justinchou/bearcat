@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo</title>
+    <script src="../../dist/bearcat.js"></script>
+    <script src="./bearcat-bootstrap.js"></script>
+    <script type="text/javascript">
+        bearcat.createApp();
+        bearcat.use(['car']);
+        bearcat.start(function() {
+            console.log('bearcat 控制反转容器启动了!');
+            let bus = bearcat.getBean('car');
+            bus.runBefore(function (err, data) {
+                console.log('===data %s err', data, err);
+            });
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>
