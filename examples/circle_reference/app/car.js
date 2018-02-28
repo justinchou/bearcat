@@ -5,6 +5,7 @@ var Car = function() {
 
 Car.prototype.run = function() {
 	console.log('run car...');
+	// this.$bus.run();
 	return 'car';
 }
 

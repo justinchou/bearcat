@@ -1,19 +1,20 @@
 /**
- * Created by examples.
+ * Created by bearcatjs.
  * File: app.js
  * User: justin
- * Date: 26/2/2018
- * Time: 00:21
+ * Date: 1/3/2018
+ * Time: 06:30
  */
 
 'use strict';
+
 
 let Bearcat = require('../../index');
 let configPaths = [require.resolve('./context.json')];
 
 Bearcat.createApp(configPaths, {});
 Bearcat.start(function () {
-    console.log('===Bearcat IoC container started');
+    console.log('Bearcat IoC container started');
     let bus = Bearcat.getBean('car');
     bus.runBefore(function (err, data) {
         console.log('===data %s err', data, err);
