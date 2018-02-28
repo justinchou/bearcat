@@ -11413,7 +11413,9 @@ module.exports={
   "description": "Magic, self-described javaScript objects build up elastic, maintainable front-backend javaScript applications",
   "main": "index.js",
   "scripts": {
-    "test": "grunt"
+    "test": "grunt",
+    "browser": "grunt browser_test",
+    "build": "grunt package"
   },
   "repository": {
     "type": "git",
