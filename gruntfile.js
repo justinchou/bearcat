@@ -59,7 +59,7 @@ module.exports = function (grunt) {
             },
             standalone: {
                 src: ['index.js'],
-                dest: './dist/bearcat.js',
+                dest: './dist/bearcatjs.js',
                 options: {
                     browserifyOptions: {
                         standalone: 'bearcat'
@@ -70,7 +70,7 @@ module.exports = function (grunt) {
         uglify: {
             dist: {
                 files: {
-                    './dist/bearcat.min.js': ['<%= browserify.standalone.dest %>'],
+                    './dist/bearcatjs.min.js': ['<%= browserify.standalone.dest %>'],
                 }
             }
         },
