@@ -14,7 +14,7 @@
 		"id": "aspect",
 		"func": "aspect",
 		"aop": [{
-			"pointcut": "before:car.runBefore",
+			"pointcut": "before:.*?runBefore",
 			"advice": "doBefore",
 			"order": 10
 		}, {

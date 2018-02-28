@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.bearcat=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.bearcat = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 require('./lib/util/requireUtil');
 
 module.exports = require('./lib/bearcat');
@@ -2595,6 +2595,8 @@ BeanDefinition.prototype.setParentName = function(parentName) {
 /**
  * BeanDefinition check whether has parent bean.
  *
+ * todo 是否应该是 return this.getParentName() && this.getParentBean(); 去掉后面的!号
+ *
  * @return  {Boolean} true|false
  * @api public
  */
@@ -4000,7 +4002,7 @@ PlaceHolderConfigurer.prototype.getProperties = function() {
 
 module.exports = PlaceHolderConfigurer;
 }).call(this,require('_process'))
-},{"../../resource/propertiesLoader":32,"../../util/constant":36,"../../util/utils":43,"./beanDefinitionVisitor":14,"./placeHolderResolver":18,"_process":50}],18:[function(require,module,exports){
+},{"../../resource/propertiesLoader":32,"../../util/constant":36,"../../util/utils":43,"./beanDefinitionVisitor":14,"./placeHolderResolver":18,"_process":49}],18:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -4204,6 +4206,7 @@ Bearcat.createApp = function(configLocations, opts) {
 
 	if (this.opts['BEARCAT_GLOBAL']) {
 		Root.bearcat = Bearcat;
+        Root.Bearcat = Bearcat;
 	}
 
 	if (!Utils.checkObject(this.opts)) {
@@ -4214,7 +4217,7 @@ Bearcat.createApp = function(configLocations, opts) {
 
 	this.state = STATE_INITED;
 	return Bearcat;
-}
+};
 
 /**
  * Bearcat start app.
@@ -4265,7 +4268,7 @@ Bearcat.start = function(cb) {
 	});
 
 	this.applicationContext.refresh();
-}
+};
 
 /**
  * Bearcat stop app.
@@ -4281,7 +4284,7 @@ Bearcat.stop = function() {
 	this.configLocations = null;
 	this.startTime = null;
 	this.state = STATE_NEW;
-}
+};
 
 /**
  * Bearcat get beanFactory instance.
@@ -4296,7 +4299,7 @@ Bearcat.getBeanFactory = function() {
 	}
 
 	return this.applicationContext.getBeanFactory();
-}
+};
 
 /**
  * Bearcat get applicationContext.
@@ -4311,7 +4314,7 @@ Bearcat.getApplicationContext = function() {
 	}
 
 	return this.applicationContext;
-}
+};
 
 /**
  * Bearcat get bean from IoC container through meta argument.
@@ -4333,7 +4336,7 @@ Bearcat.getBeanByMeta = function(meta) {
 	}
 
 	return this.applicationContext.getBeanByMeta(meta);
-}
+};
 
 /**
  * Bearcat get bean from IoC container through $ annotation function.
@@ -4355,7 +4358,7 @@ Bearcat.getBeanByFunc = function(func) {
 	}
 
 	return this.applicationContext.getBeanByFunc(func);
-}
+};
 
 /**
  * Bearcat add async loading beans, this just add beans needed to be loaded to bearcat.
@@ -4376,7 +4379,7 @@ Bearcat.use = function(ids) {
 	if (Utils.checkString(ids)) {
 		return this.applicationContext.use([ids]);
 	}
-}
+};
 
 /**
  * Bearcat async loading beans.
@@ -4399,7 +4402,30 @@ Bearcat.async = function(ids, cb) {
 	if (Utils.checkString(ids)) {
 		return this.applicationContext.async([ids], cb);
 	}
-}
+};
+
+/**
+ * Bearcat add module(bean) to IoC container through meta object.
+ *
+ * Examples:
+ *
+ *	  bearcat.meta({
+ *      id: "car",
+ *      func: Car,
+ *      scope: "prototype"
+ *    });
+ *
+ * @param {Object} meta object contains id, func and other meta properties
+ * @param {Object} context inject the object into which context
+ * @api public
+ */
+Bearcat.meta = function(meta, context) {
+    if (this.state < STATE_STARTED) {
+        return this.applicationContext.meta(meta, context);
+    } else {
+        return this.getBean(meta);
+    }
+};
 
 /**
  * Bearcat add module(bean) to IoC container through $ annotation function.
@@ -4420,7 +4446,7 @@ Bearcat.module = function(func, context) {
 	} else {
 		return this.getBean(func);
 	}
-}
+};
 
 /**
  * Bearcat get bean from IoC container through beanName or meta argument.
@@ -4467,7 +4493,7 @@ Bearcat.getBean = function(beanName) {
 	}
 
 	return this.applicationContext[func].apply(this.applicationContext, arguments);
-}
+};
 
 /**
  * Bearcat get bean constructor function from IoC container through beanName.
@@ -4490,7 +4516,7 @@ Bearcat.getFunction = function(beanName) {
 	}
 
 	return this.applicationContext.getBeanFunction(beanName);
-}
+};
 
 /**
  * Bearcat get model from bearcat through modelId.
@@ -4513,7 +4539,7 @@ Bearcat.getModel = function(modelId) {
 	}
 
 	return this.applicationContext.getModel(modelId);
-}
+};
 
 /**
  * Bearcat convenient function for using in MVC route mapping.
@@ -4537,7 +4563,7 @@ Bearcat.getRoute = function(beanName, fnName) {
 
 	var bean = this.getBean(beanName);
 	return bean[fnName].bind(bean);
-}
+};
 
 module.exports = Bearcat;
 },{"../package.json":53,"./beans/beanFactory":11,"./context/applicationContext":20,"./util/utils":43,"events":46,"pomelo-logger":56}],20:[function(require,module,exports){
@@ -5402,6 +5428,40 @@ ApplicationContext.prototype.getBeanFunction = function(beanName) {
 }
 
 /**
+ * ApplicationContext add module(bean) to IoC container through meta object from applicationContext.
+ *
+ * @param {Object} meta object contains id, func and other meta properties
+ * @param {Object} context
+ * @returns {*}
+ */
+ApplicationContext.prototype.meta = function (meta, context) {
+    meta = MetaUtil.resolveMetaAnnotation(meta);
+    var id = meta['id'];
+    if (!id) {
+        logger.error('ApplicationContext module error meta no id, add this.$id = "yourId" to your func.');
+        return;
+    }
+
+    if (this.getBeanDefinition(id)) {
+        return;
+    }
+
+    // node.js env
+    if (!Utils.checkBrowser() && Utils.isNotNull(context) && context['exports']) {
+        return context['exports'] = meta['func'];
+    }
+
+    // browser async load depended script files
+    if (Utils.checkBrowser()) {
+        var loader = this.getAsyncScriptLoader();
+        loader.module(id, meta);
+    }
+
+    // register current bean meta
+    return this.registerBeanMeta(meta);
+}
+
+/**
  * ApplicationContext add module(bean) to IoC container through $ annotation function from applicationContext.
  *
  * @param   {Function} func $ annotation function
@@ -5640,7 +5700,7 @@ ApplicationContext.prototype.getBase = function() {
 	return this.base;
 }
 }).call(this,require('_process'))
-},{"../aop/autoproxy/autoProxyCreator":4,"../beans/beanFactory":11,"../beans/support/placeHolderConfigurer":17,"../model/constraints":21,"../model/modelKeyMapResolver":26,"../resource/asyncScriptLoader":28,"../resource/bootStrapLoader":29,"../resource/resourceLoader":33,"../util/constant":36,"../util/fileUtil":37,"../util/metaUtil":38,"../util/requireUtil":41,"../util/utils":43,"_process":50,"chokidar":55,"events":46,"pomelo-logger":56}],21:[function(require,module,exports){
+},{"../aop/autoproxy/autoProxyCreator":4,"../beans/beanFactory":11,"../beans/support/placeHolderConfigurer":17,"../model/constraints":21,"../model/modelKeyMapResolver":26,"../resource/asyncScriptLoader":28,"../resource/bootStrapLoader":29,"../resource/resourceLoader":33,"../util/constant":36,"../util/fileUtil":37,"../util/metaUtil":38,"../util/requireUtil":41,"../util/utils":43,"_process":49,"chokidar":55,"events":46,"pomelo-logger":56}],21:[function(require,module,exports){
 (function (__dirname){
 var Utils = require('../../util/utils');
 
@@ -5670,7 +5730,7 @@ if (!Utils.checkBrowser()) {
 
 module.exports = Constraints;
 }).call(this,"/lib/model/constraints")
-},{"../../util/utils":43,"fs":45,"path":49}],22:[function(require,module,exports){
+},{"../../util/utils":43,"fs":45,"path":48}],22:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -7573,7 +7633,7 @@ ConfigLoader.prototype.getRecursiveScanPath = function(cpath, scanPaths, metaObj
 	}
 }
 }).call(this,require('_process'))
-},{"../util/constant":36,"../util/metaUtil":38,"../util/requireUtil":41,"../util/utils":43,"./metaLoader":31,"_process":50,"pomelo-logger":56}],31:[function(require,module,exports){
+},{"../util/constant":36,"../util/metaUtil":38,"../util/requireUtil":41,"../util/utils":43,"./metaLoader":31,"_process":49,"pomelo-logger":56}],31:[function(require,module,exports){
 (function (process){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
@@ -7737,7 +7797,7 @@ MetaLoader.prototype.loadPath = function(meta, path) {
 	return meta;
 };
 }).call(this,require('_process'))
-},{"../util/constant":36,"../util/fileUtil":37,"../util/metaUtil":38,"../util/utils":43,"_process":50,"path":49,"pomelo-logger":56}],32:[function(require,module,exports){
+},{"../util/constant":36,"../util/fileUtil":37,"../util/metaUtil":38,"../util/utils":43,"_process":49,"path":48,"pomelo-logger":56}],32:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -8333,7 +8393,7 @@ MetaUtil.mergeMeta = function(meta, originMeta) {
  * MetaUtil resolve function annotation like $id, $scope, $car etc.
  *
  * @param  {Function} func function annotation
- * @param  {String}   func function file path
+ * @param  {String}   fp func function file path
  * @param  {Boolean}  force resolve func annotation
  * @return {Object}   metaObject resolved metaObject
  * @api private
@@ -8510,6 +8570,28 @@ MetaUtil.resolveFuncAnnotation = function(func, fp, force) {
 
 	this.metaCache[funcString] = meta;
 	return meta;
+}
+
+/**
+ * MetaUtil resolve meta data id, scope, func etc.
+ *
+ * @param  {Object}   meta
+ * @param  {String}   fp meta function file path
+ * @param  {Boolean}  force resolve func annotation
+ * @return {Object}   metaObject resolved metaObject
+ * @api private
+ */
+MetaUtil.resolveMetaAnnotation = function (meta, fp, force) {
+    if (!meta || !meta['id'] || !meta['func'] || typeof meta['func'] !== 'function') {
+        return;
+    }
+    var m = MetaUtil.resolveFuncAnnotation(meta['func'], fp, force);
+    for (var i in meta) {
+    	// id, func use Meta data as main config, others prefer function settings first.
+		// todo merge args, props... array config
+        if (['func', 'id'].indexOf(i) === -1 && m[i] === undefined) m[i] = meta[i];
+    }
+    return m;
 }
 
 /**
@@ -8784,7 +8866,7 @@ MetaUtil.cleanUp = function() {
 
 module.exports = MetaUtil;
 }).call(this,require('_process'))
-},{"./constant":36,"./requireUtil":41,"./utils":43,"_process":50,"path":49,"pomelo-logger":56}],39:[function(require,module,exports){
+},{"./constant":36,"./requireUtil":41,"./utils":43,"_process":49,"path":48,"pomelo-logger":56}],39:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -9076,7 +9158,7 @@ RequireUtils.requireUtil = function() {
 }
 
 module.exports = RequireUtils;
-},{"../../shim/builtins":54,"os":48,"path":49,"util":52}],42:[function(require,module,exports){
+},{"../../shim/builtins":54,"os":47,"path":48,"util":52}],42:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
  * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
@@ -9962,8 +10044,12 @@ EventEmitter.prototype.emit = function(type) {
       er = arguments[1];
       if (er instanceof Error) {
         throw er; // Unhandled 'error' event
+      } else {
+        // At least give some kind of context to the user
+        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+        err.context = er;
+        throw err;
       }
-      throw TypeError('Uncaught, unspecified "error" event.');
     }
   }
 
@@ -9986,18 +10072,11 @@ EventEmitter.prototype.emit = function(type) {
         break;
       // slower
       default:
-        len = arguments.length;
-        args = new Array(len - 1);
-        for (i = 1; i < len; i++)
-          args[i - 1] = arguments[i];
+        args = Array.prototype.slice.call(arguments, 1);
         handler.apply(this, args);
     }
   } else if (isObject(handler)) {
-    len = arguments.length;
-    args = new Array(len - 1);
-    for (i = 1; i < len; i++)
-      args[i - 1] = arguments[i];
-
+    args = Array.prototype.slice.call(arguments, 1);
     listeners = handler.slice();
     len = listeners.length;
     for (i = 0; i < len; i++)
@@ -10035,7 +10114,6 @@ EventEmitter.prototype.addListener = function(type, listener) {
 
   // Check for listener leak
   if (isObject(this._events[type]) && !this._events[type].warned) {
-    var m;
     if (!isUndefined(this._maxListeners)) {
       m = this._maxListeners;
     } else {
@@ -10157,7 +10235,7 @@ EventEmitter.prototype.removeAllListeners = function(type) {
 
   if (isFunction(listeners)) {
     this.removeListener(type, listeners);
-  } else {
+  } else if (listeners) {
     // LIFO order
     while (listeners.length)
       this.removeListener(type, listeners[listeners.length - 1]);
@@ -10178,15 +10256,20 @@ EventEmitter.prototype.listeners = function(type) {
   return ret;
 };
 
+EventEmitter.prototype.listenerCount = function(type) {
+  if (this._events) {
+    var evlistener = this._events[type];
+
+    if (isFunction(evlistener))
+      return 1;
+    else if (evlistener)
+      return evlistener.length;
+  }
+  return 0;
+};
+
 EventEmitter.listenerCount = function(emitter, type) {
-  var ret;
-  if (!emitter._events || !emitter._events[type])
-    ret = 0;
-  else if (isFunction(emitter._events[type]))
-    ret = 1;
-  else
-    ret = emitter._events[type].length;
-  return ret;
+  return emitter.listenerCount(type);
 };
 
 function isFunction(arg) {
@@ -10206,31 +10289,6 @@ function isUndefined(arg) {
 }
 
 },{}],47:[function(require,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
-}
-
-},{}],48:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -10277,7 +10335,11 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],49:[function(require,module,exports){
+exports.homedir = function () {
+	return '/'
+};
+
+},{}],48:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -10505,73 +10567,167 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":50}],50:[function(require,module,exports){
+},{"_process":49}],49:[function(require,module,exports){
 // shim for using process in browser
-
 var process = module.exports = {};
 
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canMutationObserver = typeof window !== 'undefined'
-    && window.MutationObserver;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
 
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
     }
 
-    var queue = [];
 
-    if (canMutationObserver) {
-        var hiddenDiv = document.createElement("div");
-        var observer = new MutationObserver(function () {
-            var queueList = queue.slice();
-            queue.length = 0;
-            queueList.forEach(function (fn) {
-                fn();
-            });
-        });
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
 
-        observer.observe(hiddenDiv, { attributes: true });
 
-        return function nextTick(fn) {
-            if (!queue.length) {
-                hiddenDiv.setAttribute('yes', 'no');
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
             }
-            queue.push(fn);
-        };
+        }
+        queueIndex = -1;
+        len = queue.length;
     }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
 
-    if (canPost) {
-        window.addEventListener('message', function (ev) {
-            var source = ev.source;
-            if ((source === window || source === null) && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
     }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
 
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
 process.title = 'browser';
 process.browser = true;
 process.env = {};
 process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
 
 function noop() {}
 
@@ -10582,16 +10738,45 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
-// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
+process.umask = function() { return 0; };
+
+},{}],50:[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
 
 },{}],51:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
@@ -11190,19 +11375,18 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":51,"_process":50,"inherits":47}],53:[function(require,module,exports){
+},{"./support/isBuffer":51,"_process":49,"inherits":50}],53:[function(require,module,exports){
 module.exports={
-  "name": "bearcat",
-  "version": "0.4.12",
+  "name": "bearcatjs",
+  "version": "1.0.3",
   "description": "Magic, self-described javaScript objects build up elastic, maintainable front-backend javaScript applications",
   "main": "index.js",
-  "bin": "./bin/bearcat-bin.js",
   "scripts": {
     "test": "grunt"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bearcatjs/bearcat.git"
+    "url": "https://github.com/justinchou/bearcatjs.git"
   },
   "keywords": [
     "di",
@@ -11220,9 +11404,10 @@ module.exports={
     "magic, self-described javaScript objects"
   ],
   "dependencies": {
-    "pomelo-logger": "0.1.x",
-    "commander": "2.x",
-    "chokidar": "0.12.6"
+    "bearcat": "^0.4.29",
+    "chokidar": "^2.0.2",
+    "commander": "^2.14.1",
+    "pomelo-logger": "^0.1.7"
   },
   "browser": {
     "pomelo-logger": "./shim/logger.js",
@@ -11231,16 +11416,17 @@ module.exports={
   "author": "fantasyni",
   "license": "MIT",
   "devDependencies": {
-    "expect.js": "~0.3.1",
-    "mocha": ">=0.0.1",
-    "grunt": "~0.4.2",
-    "blanket": "1.1.x",
-    "grunt-browserify": "3.x",
-    "grunt-mocha-test": "0.8.x",
-    "grunt-contrib-clean": "0.5.x",
-    "grunt-contrib-uglify": "~0.3.2"
+    "blanket": "^1.2.3",
+    "expect.js": "^0.3.1",
+    "grunt": "^1.0.2",
+    "grunt-browserify": "^5.2.0",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-uglify": "^3.3.0",
+    "grunt-mocha-test": "^0.13.3",
+    "mocha": "^5.0.1"
   }
 }
+
 },{}],54:[function(require,module,exports){
 /*!
  * .______    _______     ___      .______       ______     ___   .__________.
@@ -11352,7 +11538,7 @@ module.exports = {
 	getLogger: getLogger
 }
 }).call(this,require('_process'))
-},{"../lib/util/utils":43,"_process":50}],57:[function(require,module,exports){
+},{"../lib/util/utils":43,"_process":49}],57:[function(require,module,exports){
 exports.endianness = function() {
     return 'LE'
 };
@@ -11637,7 +11823,7 @@ var substr = 'ab'.substr(-1) === 'b' ? function(str, start, len) {
   return str.substr(start, len);
 };
 }).call(this,require('_process'))
-},{"_process":50}],59:[function(require,module,exports){
+},{"_process":49}],59:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -12351,7 +12537,7 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/inherits":60,"./support/isBuffer":61,"_process":50}],63:[function(require,module,exports){
+},{"./support/inherits":60,"./support/isBuffer":61,"_process":49}],63:[function(require,module,exports){
 if (typeof Object.create != 'function') {
   Object.create = (function() {
     var Object = function() {};
