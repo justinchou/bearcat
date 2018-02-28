@@ -8586,12 +8586,43 @@ MetaUtil.resolveMetaAnnotation = function (meta, fp, force) {
         return;
     }
     var m = MetaUtil.resolveFuncAnnotation(meta['func'], fp, force);
+    // console.log('====', m);
     for (var i in meta) {
-    	// id, func use Meta data as main config, others prefer function settings first.
-		// todo merge args, props... array config
-        if (['func', 'id'].indexOf(i) === -1 && m[i] === undefined) m[i] = meta[i];
+        if (i === 'func') continue;
+        if (['args', 'props', 'factoryArgs'].indexOf(i) !== -1) {
+        	if (!meta[i]) continue;
+        	if (!m[i]) m[i] = [];
+            MetaUtil.overrideArray(meta[i], m[i]);
+			continue;
+		}
+        m[i] = meta[i];
     }
+    // console.log('----', m);
     return m;
+}
+
+/**
+ * override array item by name
+ *
+ * override item in sarr into tarr
+ *
+ * @param {Array} sarr source array
+ * @param {Array} tarr target array
+ */
+MetaUtil.overrideArray = function (sarr, tarr) {
+    for (var i = 0; i < sarr.length; i++) {
+    	var s = sarr[i];
+        for (var j = 0; j < tarr.length; j++) {
+        	var t = tarr[j];
+        	if (s.name === t.name) {
+        		tarr.splice(j, 1, s);
+        		break;
+			}
+		}
+		if (tarr.indexOf(s) === -1) {
+        	tarr.push(s);
+		}
+	}
 }
 
 /**
@@ -11422,7 +11453,9 @@ module.exports={
     "grunt-browserify": "^5.2.0",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-uglify": "^3.3.0",
+    "grunt-mocha-istanbul": "^5.0.2",
     "grunt-mocha-test": "^0.13.3",
+    "istanbul": "^0.4.5",
     "mocha": "^5.0.1"
   }
 }

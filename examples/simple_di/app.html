@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bearcat Webservice</title>
+    <script src="../../dist/bearcat.js"></script>
+    <script src="./bearcat-bootstrap.js"></script>
+    <script type="text/javascript">
+        bearcat.createApp();   // 创建bearcat对象
+        bearcat.use(['car', 'bus', 'moto', 'engine']);  // 需要用到的对象
+        bearcat.start(function() {
+            // 当进入这个回调时候, 所有需要加载的一切已经就绪
+            var car = bearcat.getBean('car', '军V100009');
+            car.run();
+
+            var bus = bearcat.getBean('bus');
+            bus.run();
+
+            var moto = bearcat.getBean('moto');
+            moto.run();
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>
