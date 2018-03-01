@@ -9,7 +9,7 @@ Bus.prototype.init = function(cb) {
 	setTimeout(function() {
 		console.log('Bus asyncInit setTimeout');
 		cb();
-	}, 200);
+	}, 100);
 }
 
 Bus.prototype.run = function() {

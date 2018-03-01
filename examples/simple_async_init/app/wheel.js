@@ -8,7 +8,7 @@ var Wheel = function() {
 Wheel.prototype.init = function(cb) {
 	console.log('init wheel...');
 	setTimeout(function() {
-		console.log('asyncInit setTimeout');
+		console.log('wheel asyncInit setTimeout');
 		cb();
 	}, 100);
 }

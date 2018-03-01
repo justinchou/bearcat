@@ -5,7 +5,7 @@ var Engine = function() {
 }
 
 Engine.prototype.init = function(cb) {
-	console.log('engine init');
+	console.log('init engine');
 	cb();
 }
 
