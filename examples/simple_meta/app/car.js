@@ -3,7 +3,7 @@ var Car = function() {
 }
 
 Car.prototype.run = function() {
-	console.log('run car...');
+	console.log('run context car...');
 	return 'car';
 }
 
