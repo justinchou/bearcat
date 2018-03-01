@@ -3,8 +3,8 @@ var Car = function() {
 }
 
 Car.prototype.run = function() {
-	console.log('run car...');
-	return 'car';
+	console.log('run car1...');
+	return 'car 1';
 }
 
 module.exports = Car;
