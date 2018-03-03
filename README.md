@@ -43,17 +43,17 @@ You just use only those parts that you need
 
 * bower : 
 ```
-bower install bearcat
+bower install bearcatjs
 ```
 
 * browserfiy : 
 ```
-npm install bearcat
+npm install bearcatjs
 ```
 
 ### Backend(nodejs)
 ```
-npm install bearcat
+npm install bearcatjs
 ```
 
 ## Build
