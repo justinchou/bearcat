@@ -89,4 +89,25 @@ var r = [{
 	}
 }];
 
+// mockResultDB SQL
+
+// SELECT *
+// FROM (SELECT
+// a.id      AS author_id,
+//     a.name    AS author_name,
+//     b.id      AS blog_id,
+//     b.title   AS blog_title,
+//     b.content AS blog_content
+// FROM author AS a LEFT JOIN blog AS b ON a.id = b.aid
+// ) AS t1 LEFT JOIN (SELECT
+// a.id      AS comment_author_id,
+//     a.name    AS comment_author_name,
+//     c.id      AS comment_id,
+//     c.content AS comment_content,
+//     c.bid     AS blog_id
+// FROM author AS a LEFT JOIN comment AS c ON a.id = c.aid
+// ) AS t2 ON t1.blog_id = t2.blog_id;
+
+MockResultSet.t4 = require('./mockResultDB.csv.json');
+
 module.exports = MockResultSet;

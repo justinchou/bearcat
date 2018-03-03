@@ -1,6 +1,7 @@
 var BlogResultModel = function() {
 	this.$mid = "blogResult";
 	// this.$prefix = "blog_";
+
 	this.blog = "$type:Object;ref:blog";
 	this.author = "$type:Object;ref:author";
 	// this.comments = "$type:Array;ref:comment";
@@ -8,11 +9,12 @@ var BlogResultModel = function() {
 }
 
 BlogResultModel.prototype.run = function() {
-	console.log("%j", this.blog);
-	console.log("%j", this.author);
-	// console.log("%j", this.comments);
-	console.log("%j", this.commentResults);
-	// console.log(this.comments)
+	console.log();
+	console.log('======================');
+	console.log();
+	console.log(this.blog.toJSON());
+	console.log(this.author.toJSON());
+	console.log(JSON.parse(JSON.stringify(this.commentResults)));
 }
 
 module.exports = BlogResultModel;

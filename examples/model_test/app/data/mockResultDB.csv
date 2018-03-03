@@ -1,0 +1,13 @@
+author_id	author_name	blog_id	blog_title	blog_content	comment_author_id	comment_author_name	comment_id	comment_content
+1	justin	1	那些年的幸福日子糟透了	幸福的日子总是计较的少, 忽略了雾霾, 忽略了铅超标...	4	swift	1	最喜欢医疗行业,但是无缘进入了...
+1	justin	2	中医六病的原理解说	六病:风湿热暑寒燥	3	water	2	沙发
+1	justin	2	中医六病的原理解说	六病:风湿热暑寒燥	4	swift	3	板凳,顶起
+2	chow	3	Bearcat的文档翻译	地址: http://bearcatjs.cn	4	swift	4	好东西, 学习计算机技术中
+2	chow	3	Bearcat的文档翻译	地址: http://bearcatjs.cn	1	justin	5	学习, 顶起
+2	chow	4	Nodejs的AOP实现	参考Bearcat熊猫框架	1	justin	6	学习顶起
+2	chow	5	未来发展方向NodeJS,Python还是Golang	对比Golang,Python和NodeJS都能做什么, 各自擅长的领域, 各大公司的使用情况	3	water	7	学习顶起来啦!!
+3	water	6	金融领域的发展前景	你适合进入金融行业么?	2	chow	8	金融行业在每个行业都能插一脚
+3	water	6	金融领域的发展前景	你适合进入金融行业么?	4	swift	9	金融行业与会计行业有很多共通之处
+3	water	7	银行,证券还是保险行业?	三大金融行业, 互联网金融将如何进入娱乐场?	1	justin	10	在医疗行业能不能投资?
+4	swift	8	30几岁的你如何进入会计行业	四大准入标准是什么, 为什么要招一个30岁转行的而不是二十几岁的新人?	2	chow	11	好文章, 学习了, 正要转行
+4	swift	8	30几岁的你如何进入会计行业	四大准入标准是什么, 为什么要招一个30岁转行的而不是二十几岁的新人?	3	water	12	金融与会计确实有共同之处
