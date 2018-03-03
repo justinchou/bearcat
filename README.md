@@ -38,8 +38,8 @@ You just use only those parts that you need
 ## Install
 ### Frontend
 * standalone :   
-[bearcat.js](https://raw.githubusercontent.com/bearcatjs/bearcat/master/dist/bearcat.js)  
-[bearcat.min.js](https://raw.githubusercontent.com/bearcatjs/bearcat/master/dist/bearcat.min.js)
+[bearcat.js](https://raw.githubusercontent.com/justinchou/bearcatjs/master/dist/bearcatjs.js)  
+[bearcat.min.js](https://raw.githubusercontent.com/justinchou/bearcatjs/master/dist/bearcat.min.js)
 
 * bower : 
 ```
